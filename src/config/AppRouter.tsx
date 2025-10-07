@@ -55,7 +55,7 @@ const RouteFallback: React.FC = () => {
 const publicRoutes: PublicRouteCfg[] = [
     { path: "/domicilios-pitalito", element: <Home />, layout: PublicLayout },
     { path: "/locales-populares", element: <Populares />, layout: PublicLayout },
-        { path: "/comercios-pitalito", element: <ComercioPage />, layout: PublicLayout },
+    { path: "/local-comercial/:id", element: <ComercioPage />, layout: PublicLayout },
 
     { path: "/403", element: <Forbidden /> },
 ];
@@ -77,7 +77,7 @@ const privateRoutes: PrivateRouteCfg[] = [
         requireRole: "administrador",     // 👈 rol requerido (o ["admin","super"])
     },
 
-     {
+    {
         path: "/usuarios",
         element: <Usuarios />,
         layout: MainLayout,               // 👈 esta requiere MainLayout
