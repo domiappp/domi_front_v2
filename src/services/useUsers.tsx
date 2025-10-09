@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { api } from "../config/axios"
 import type { AxiosError } from "axios"
 import type { CreateUserPayload, UserList } from "../shared/types/users-type"
+import { useModalStore } from "../store/modal.store";
 
 export type UsersResponse = {
   meta: { page: number; limit: number; total: number; totalPages: number };

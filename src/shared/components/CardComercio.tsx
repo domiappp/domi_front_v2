@@ -1,39 +1,22 @@
 import React, { useId } from "react";
 import { Heart, ChevronRight, Star } from "lucide-react";
-
-// ========================================================
-// CardComercio: versión enfocada en LOCALES DE COMIDA
-// - Quitado del render: distancia, tiempos min-max, costo de envío.
-// - Agregado: estado Abierto/Cerrado y Ubicación.
-// - Mejorado responsive y accesibilidad.
-// - Botones con íconos de lucide-react.
-// ========================================================
+import { useNavigate } from "react-router-dom";
 
 export type CardComercioProps = {
   id?: string;
   nombre: string;
-  categoria: string; // p. ej. Pizzería, Sushi, Cafetería
-  imagen: string;
+  categoria: string;
+  imagen: string; // puede ser URL completa o path relativo
   esFavorito?: boolean;
-  /** @deprecated Ya no se muestra en la tarjeta */
   precioDesde?: number;
-  rating?: number; // 0 - 5
-  reviews?: number; // cantidad de reseñas
-
-  /** NUEVO: estado del local */
+  rating?: number;
+  reviews?: number;
   abierto?: boolean;
-  /** NUEVO: dirección mostrada en la tarjeta (ej. "Cra 2E #12-7 sur") */
   ubicacion?: string;
-
-  /** @deprecated Ya no se muestra en la tarjeta */
-  distanciaKm?: number; // opcional
-  /** @deprecated Ya no se muestra en la tarjeta */
-  tiempoEntregaMin?: number; // en minutos
-  /** @deprecated Ya no se muestra en la tarjeta */
-  tiempoEntregaMax?: number; // en minutos
-  /** @deprecated Ya no se muestra en la tarjeta */
-  costoEnvio?: number | "Gratis"; // opcional
-
+  distanciaKm?: number;
+  tiempoEntregaMin?: number;
+  tiempoEntregaMax?: number;
+  costoEnvio?: number | "Gratis";
   onToggleFavorito?: (id?: string) => void;
 };
 
@@ -72,7 +55,6 @@ const Stars: React.FC<{ value?: number }> = ({ value = 0 }) => {
   );
 };
 
-// Pequeño pill para estado abierto/cerrado
 const EstadoPill: React.FC<{ abierto?: boolean }> = ({ abierto }) => {
   const isOpen = abierto === true;
   const isClosed = abierto === false;
@@ -89,12 +71,8 @@ const EstadoPill: React.FC<{ abierto?: boolean }> = ({ abierto }) => {
   );
 };
 
+const Base = import.meta.env.VITE_API_URL;
 
-const Base = import.meta.env.VITE_API_URL
-
-// ========================================================
-// Card
-// ========================================================
 const CardComercio: React.FC<CardComercioProps> = ({
   id,
   nombre,
@@ -107,29 +85,53 @@ const CardComercio: React.FC<CardComercioProps> = ({
   ubicacion,
   onToggleFavorito,
 }) => {
+  const navigate = useNavigate();
+
+  const goDetail = () => {
+    if (!id) return;
+    navigate(`/local-comercial/${id}`);
+  };
+
+  const onKeyGoDetail: React.KeyboardEventHandler<HTMLElement> = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      goDetail();
+    }
+  };
+
+  // Soporta imágenes absolutas (http...) o relativas (se antepone Base)
+  const imgUrl =
+    imagen?.startsWith("http") || imagen?.startsWith("data:")
+      ? imagen
+      : `${Base}/archivos/${imagen}`;
+
   return (
-    <article className="group pb-3 relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-[#F2F2F2] transition supports-[hover:hover]:hover:shadow-md">
-      {/* Botón favorito */}
+    <article
+      role="button"
+      tabIndex={0}
+      onClick={goDetail}
+      onKeyDown={onKeyGoDetail}
+      aria-label={`Ver ${nombre}`}
+      className="group cursor-pointer pb-3 relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-[#F2F2F2] transition supports-[hover:hover]:hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6600]"
+    >
+      {/* Botón favorito (no navega) */}
       <button
         type="button"
         aria-label={esFavorito ? "Quitar de favoritos" : "Agregar a favoritos"}
-        onClick={() => onToggleFavorito?.(id)}
+        onClick={(e) => {
+          e.stopPropagation(); // ⛔️ evita navegar
+          onToggleFavorito?.(id);
+        }}
         className="absolute right-2 top-2 z-10 grid h-9 w-9 place-items-center rounded-full bg-white/95 backdrop-blur-sm shadow ring-1 ring-[#F2F2F2] transition active:scale-95 focus-visible:outline-2 focus-visible:outline-[#FF6600]"
       >
         <Heart
-          className={`h-5 w-5 ${
-            esFavorito ? "text-[#FF6600] fill-[#FF6600]" : "text-gray-300"
-          }`}
+          className={`h-5 w-5 ${esFavorito ? "text-[#FF6600] fill-[#FF6600]" : "text-gray-300"}`}
         />
       </button>
 
       {/* Imagen */}
       <div className="w-full relative h-[120px] lg:h-[180px] rounded-2xl bg-[#FFB84D] object-cover transition-transform truncate">
-        <img
-          src={`${Base}/archivos/${imagen}`}
-          alt={nombre}
-          className="w-full h-full object-cover"
-        />
+        <img src={imgUrl} alt={nombre} className="w-full h-full object-cover" />
         <div className="absolute bottom-2 left-2">
           <EstadoPill abierto={abierto} />
         </div>
@@ -148,160 +150,34 @@ const CardComercio: React.FC<CardComercioProps> = ({
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex items-center gap-1 text-xs text-gray-600">
             <Stars value={round(rating)} />
-            <span className="ml-1 font-medium text-[#333333]">
-              {round(rating) ?? 0}
-            </span>
-            {typeof reviews === "number" && (
-              <span className="truncate">• {reviews}</span>
-            )}
+            <span className="ml-1 font-medium text-[#333333]">{round(rating) ?? 0}</span>
+            {typeof reviews === "number" && <span className="truncate">• {reviews}</span>}
           </div>
 
           {/* Estado + Ubicación */}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-gray-600">
             {ubicacion && (
-              <span className="truncate max-w-full sm:max-w-[220px] lg:max-w-[260px]">
-                {ubicacion}
-              </span>
+              <span className="truncate max-w-full sm:max-w-[220px] lg:max-w-[260px]">{ubicacion}</span>
             )}
           </div>
         </div>
 
-        {/* Botón de acción */}
-        <div className="shrink-0 grid h-9 w-9 place-items-center rounded-full bg-[#FF783B]">
+        {/* Botón de acción (también navega) */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation(); // evita que el click burbujee dos veces
+            goDetail();
+          }}
+          className="shrink-0 grid h-9 w-9 place-items-center rounded-full bg-[#FF783B] focus-visible:outline-2 focus-visible:outline-[#FF6600]"
+          aria-label={`Ir a ${nombre}`}
+          title="Ver detalles"
+        >
           <ChevronRight className="h-5 w-5 text-white transition group-hover:scale-110" />
-        </div>
+        </button>
       </div>
     </article>
   );
 };
 
-
 export default CardComercio;
-
-// ========================================================
-// Demo de lista responsive (móvil 2 col, md 3, lg 4)
-// ========================================================
-export const ListaComerciosDemo: React.FC = () => {
-  const data: CardComercioProps[] = [
-
-    {
-      id: "2",
-      nombre: "Hamburguesas Mix",
-      categoria: "Hamburguesería",
-      imagen:
-        "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=512&auto=format&fit=crop",
-      rating: 4.7,
-      reviews: 201,
-      esFavorito: true,
-      abierto: true,
-      ubicacion: "Cll 45 #18-22",
-    },
-    {
-      id: "3",
-      nombre: "Café Central",
-      categoria: "Cafetería",
-      imagen:
-        "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=512&auto=format&fit=crop",
-      rating: 4.2,
-      reviews: 98,
-      esFavorito: false,
-      abierto: false,
-      ubicacion: "Av. 7 #114-09",
-    },
-    {
-      id: "4",
-      nombre: "Sushi House",
-      categoria: "Sushi",
-      imagen:
-        "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=512&auto=format&fit=crop",
-      rating: 4.6,
-      reviews: 156,
-      esFavorito: false,
-      abierto: true,
-      ubicacion: "Transv. 93 #65-30",
-    },
-    {
-      id: "6",
-      nombre: "Hamburguesas Mix",
-      categoria: "Hamburguesería",
-      imagen:
-        "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=512&auto=format&fit=crop",
-      rating: 4.7,
-      reviews: 201,
-      esFavorito: true,
-      abierto: true,
-      ubicacion: "Cll 45 #18-22",
-    },
-    {
-      id: "7",
-      nombre: "Café Central",
-      categoria: "Cafetería",
-      imagen:
-        "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=512&auto=format&fit=crop",
-      rating: 4.2,
-      reviews: 98,
-      esFavorito: false,
-      abierto: false,
-      ubicacion: "Av. 7 #114-09",
-    },
-    {
-      id: "8",
-      nombre: "Sushi House",
-      categoria: "Sushi",
-      imagen:
-        "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=512&auto=format&fit=crop",
-      rating: 4.6,
-      reviews: 156,
-      esFavorito: false,
-      abierto: true,
-      ubicacion: "Transv. 93 #65-30",
-    },
-    {
-      id: "10",
-      nombre: "Hamburguesas Mix",
-      categoria: "Hamburguesería",
-      imagen:
-        "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=512&auto=format&fit=crop",
-      rating: 4.7,
-      reviews: 201,
-      esFavorito: true,
-      abierto: true,
-      ubicacion: "Cll 45 #18-22",
-    },
-    {
-      id: "11",
-      nombre: "Café Central",
-      categoria: "Cafetería",
-      imagen:
-        "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=512&auto=format&fit=crop",
-      rating: 4.2,
-      reviews: 98,
-      esFavorito: false,
-      abierto: false,
-      ubicacion: "Av. 7 #114-09",
-    },
-    {
-      id: "12",
-      nombre: "Sushi House",
-      categoria: "Sushi",
-      imagen:
-        "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=512&auto=format&fit=crop",
-      rating: 4.6,
-      reviews: 156,
-      esFavorito: false,
-      abierto: true,
-      ubicacion: "Transv. 93 #65-30",
-    },
-  ];
-
-  return (
-    <div className="mx-auto w-full max-w-8xl p-3 sm:p-4">
-      <h2 className="mb-3 text-base sm:text-lg font-semibold">Cerca de ti</h2>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:gap-3 lg:gap-4">
-        {data.map((c) => (
-          <CardComercio key={c.id} {...c} onToggleFavorito={(id) => console.log("toggle", id)} />
-        ))}
-      </div>
-    </div>
-  );
-};

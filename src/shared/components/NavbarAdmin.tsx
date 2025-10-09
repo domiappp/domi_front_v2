@@ -36,7 +36,7 @@ const NavbarAdmin: React.FC = () => {
 
   return (
     <>
-      <div className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
+      <div className="navbar bg-base-100 shadow-sm sticky top-0 z-10">
         {/* Brand */}
         <div className="navbar-start">
           <Link to="/dashboard" className="btn btn-ghost text-xl font-bold">

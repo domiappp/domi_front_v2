@@ -5,6 +5,14 @@ import type { CardComercioProps } from './CardComercio';
 import { useServicesUI } from '../../store/services.store';
 import { flattenPages, useComerciosPorServicioInfinite } from '../../services/useComerciosPorServicio';
 
+// Formularios
+import FormCompras from '../../features/OtherServices/FormCompras';
+import FormRecogida from '../../features/OtherServices/FormRecogida';
+import FormPagos from '../../features/OtherServices/FormPagos';
+import FormEnvios from '../../features/OtherServices/FormEnvios';
+import { div } from 'framer-motion/client';
+
+
 const mapToCard = (c: any): CardComercioProps => ({
   id: String(c.id),
   nombre: c.nombre_comercial,
@@ -17,31 +25,37 @@ const mapToCard = (c: any): CardComercioProps => ({
 });
 
 const ComerciosPorServicioGrid: React.FC = () => {
-  // ✅ Hooks SIEMPRE arriba, sin condiciones
-  const serviceId = useServicesUI((s) => s.selectedServiceId);
-  const q = useServicesUI((s) => s.search);
-  const saveScroll = useServicesUI((s) => s.saveScrollForService);
-  const getScroll = useServicesUI((s) => s.getScrollForService);
+  // 🔒 SIEMPRE los mismos hooks y en el mismo orden
+  const uiView      = useServicesUI((s) => s.uiView);
+  const formType    = useServicesUI((s) => s.formType);
+  const serviceId   = useServicesUI((s) => s.selectedServiceId);
+  const q           = useServicesUI((s) => s.search);
+  const saveScroll  = useServicesUI((s) => s.saveScrollForService);
+  const getScroll   = useServicesUI((s) => s.getScrollForService);
 
-  const enabled = Number.isFinite(serviceId as number);
+  // Solo habilitamos la query cuando estamos en vista API y hay serviceId
+  const enabled = Number.isFinite(serviceId as number) && uiView === 'api';
 
+  // ✅ Hook SIEMPRE llamado. Internamente no hará nada si enabled=false
   const query = useComerciosPorServicioInfinite(
     { serviceId: serviceId ?? 0, q, limit: 20 },
     { enabled }
   );
 
-  const items = useMemo(() => flattenPages(query.data as any).map(mapToCard), [query.data]);
+  const items = useMemo(
+    () => (enabled && query.data ? flattenPages(query.data as any).map(mapToCard) : []),
+    [enabled, query.data]
+  );
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  // ✅ Restaurar scroll (condición dentro del efecto)
+  // Efectos SIEMPRE declarados, con guards internos
   useEffect(() => {
     if (!enabled || !serviceId) return;
     const y = getScroll(serviceId);
     if (y > 0) window.scrollTo(0, y);
   }, [enabled, serviceId, getScroll]);
 
-  // ✅ Guardar scroll (condición dentro del efecto)
   useEffect(() => {
     if (!enabled || !serviceId) return;
     const onLeave = () => saveScroll(serviceId, window.scrollY);
@@ -52,7 +66,6 @@ const ComerciosPorServicioGrid: React.FC = () => {
     };
   }, [enabled, serviceId, saveScroll]);
 
-  // ✅ Infinite scroll (condición dentro del efecto)
   useEffect(() => {
     if (!enabled) return;
     if (!query.hasNextPage) return;
@@ -68,7 +81,43 @@ const ComerciosPorServicioGrid: React.FC = () => {
     return () => io.disconnect();
   }, [enabled, query.hasNextPage, query.isFetchingNextPage, query.fetchNextPage]);
 
-  // ✅ Ramas de renderización (después de TODOS los hooks)
+  // 🟠 A partir de aquí, recién hacemos returns condicionales
+
+  // 1) Vista formularios
+if (uiView === 'form') {
+  return (
+    <section className="w-full">
+      {/* Contenedor centrado y con padding responsive */}
+      <div className="mx-auto max-w-6xl px-3 py-6 md:py-10">
+        {/* Layout responsive: en móvil solo form; en md+ dos columnas y centrado vertical */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 md:items-center">
+          
+          {/* FORM: centrado y con ancho cómodo */}
+          <div className="order-2 md:order-1">
+            <div className="mx-auto w-full max-w-xl">
+              {formType === 'pedido'   && <FormCompras />}
+              {formType === 'recogida' && <FormRecogida />}
+              {formType === 'pago'     && <FormPagos />}
+              {formType === 'envio'    && <FormEnvios />}
+            </div>
+          </div>
+
+          {/* IMAGEN: oculta en mobile, visible en md+ y centrada */}
+          <div className="order-1 md:order-2 hidden md:flex justify-center items-start">
+            <img
+              src="/moto.png"
+              alt="Entrega en moto"
+              className="w-full max-w-xl h-auto object-contain"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+  // 2) Vista API (exploración)
   if (!serviceId) {
     return (
       <div className="mx-auto w-full max-w-8xl p-3 sm:p-4">

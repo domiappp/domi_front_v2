@@ -1,9 +1,13 @@
 import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useQueryClient } from '@tanstack/react-query';
+import Swal from 'sweetalert2';
 import { Input } from '../../shared/components/Input';
 import { Select } from '../../shared/components/Select';
 import type { UserList } from '../../shared/types/users-type';
 import { useCreateUsuario, useUpdateUsuario } from '../../services/useUsers';
+import { useModalStore } from '../../store/modal.store';
+import { getErrorMessage, getFieldErrors } from '../../utils/http';
 
 type Props = {
   mode: 'create' | 'edit';
@@ -25,12 +29,12 @@ const rolesFallback = [
 type FormVals = {
   name: string;
   email: string;
-  rol: any; // Cambia a tu tipo Rol si lo tienes importado
+  rol: any;
   estado: 'activo' | 'inactivo';
   direccion?: string;
   telefono?: string;
-  password?: string;         // <- nuevo
-  confirmPassword?: string;  // <- nuevo (solo front)
+  password?: string;
+  confirmPassword?: string;
 };
 
 function makeDefaults(isEdit: boolean, initial?: UserList | null): FormVals {
@@ -42,8 +46,8 @@ function makeDefaults(isEdit: boolean, initial?: UserList | null): FormVals {
       estado: initial.estado ?? 'activo',
       direccion: initial.direccion ?? '',
       telefono: initial.telefono ?? '',
-      password: '',         // vacío por seguridad
-      confirmPassword: '',  // vacío por seguridad
+      password: '',
+      confirmPassword: '',
     };
   }
   return {
@@ -62,12 +66,16 @@ const FormUsuarios: React.FC<Props> = ({ mode, initial, onSuccess, onCancel }) =
   const isEdit = mode === 'edit';
   const defaults = useMemo(() => makeDefaults(isEdit, initial ?? null), [isEdit, initial]);
 
+  const queryClient = useQueryClient();
+  const closeModal = useModalStore((s) => s.close);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting, isDirty },
     reset,
     watch,
+    setError,
   } = useForm<FormVals>({
     defaultValues: defaults,
     mode: 'onBlur',
@@ -84,43 +92,69 @@ const FormUsuarios: React.FC<Props> = ({ mode, initial, onSuccess, onCancel }) =
   const password = watch('password');
 
   const onSubmit = handleSubmit(async (values) => {
-    // No enviamos confirmPassword al backend
     const { confirmPassword, ...rest } = values;
 
-    if (isEdit) {
-      if (!initial?.id) return;
+    try {
+      let u: any;
 
-      // Construye payload parcial: solo password si viene y cumple
-      const payload: any = {
-        name: rest.name,
-        email: rest.email,
-        rol: rest.rol,
-        estado: rest.estado,
-        direccion: rest.direccion || undefined,
-        telefono: rest.telefono || undefined,
-      };
+      if (isEdit) {
+        if (!initial?.id) return;
 
-      if (rest.password && rest.password.length >= 6) {
-        payload.password = rest.password;
+        const payload: any = {
+          name: rest.name,
+          email: rest.email,
+          rol: rest.rol,
+          estado: rest.estado,
+          direccion: rest.direccion || undefined,
+          telefono: rest.telefono || undefined,
+        };
+        if (rest.password && rest.password.length >= 6) {
+          payload.password = rest.password;
+        }
+
+        u = await actualizar.mutateAsync({ id: initial.id, payload });
+      } else {
+        u = await crear.mutateAsync(rest as any);
+        reset(makeDefaults(false, null));
+      }
+      closeModal();
+
+      await Swal.fire({
+        title: isEdit ? 'Usuario actualizado' : 'Usuario creado',
+        text: 'La operación se realizó correctamente.',
+        icon: 'success',
+        confirmButtonText: 'Aceptar',
+      });
+
+      queryClient.invalidateQueries({ queryKey: ['usuarios', 'list'] });
+
+      onSuccess?.(u as UserList);
+    } catch (err: any) {
+      const fieldErrors = getFieldErrors(err);
+      if (fieldErrors) {
+        Object.entries(fieldErrors).forEach(([field, message]) => {
+          if (field in (defaults as any)) {
+            setError(field as keyof FormVals, { type: 'server', message });
+          }
+        });
       }
 
-      actualizar.mutate(
-        { id: initial.id, payload },
-        { onSuccess: (u) => onSuccess?.(u as unknown as UserList) }
-      );
-    } else {
-      // Crear: password es obligatorio (validado abajo), no enviar confirmPassword
-      crear.mutate(rest as any, {
-        onSuccess: (u) => {
-          reset(makeDefaults(false, null));
-          onSuccess?.(u as unknown as UserList);
-        },
+      const message = getErrorMessage(err);
+
+      await Swal.fire({
+        title: 'Error',
+        text: message,
+        icon: 'error',
+        confirmButtonText: 'Entendido',
       });
     }
   });
 
   const loading = isSubmitting || crear.isPending || actualizar.isPending;
-  const apiError = (crear.error as any)?.message || (actualizar.error as any)?.message;
+
+  // puedes seguir mostrando un banner si quieres
+  const apiError =
+    (crear.error as any)?.message || (actualizar.error as any)?.message;
 
   const rolesOptions = rolesFallback;
 
@@ -161,23 +195,20 @@ const FormUsuarios: React.FC<Props> = ({ mode, initial, onSuccess, onCancel }) =
           />
         </div>
 
-{
-    isEdit && (
+        {isEdit && (
+          <div>
+            <Select
+              label="Estado"
+              options={estados as unknown as { value: string | number; label: string }[]}
+              {...register('estado', {
+                required: 'Selecciona un estado',
+                setValueAs: (v: string) => (v === 'inactivo' ? 'inactivo' : 'activo'),
+              })}
+              errorText={errors.estado?.toString()}
+            />
+          </div>
+        )}
 
-        <div>
-          <Select
-            label="Estado"
-            options={estados as unknown as { value: string | number; label: string }[]}
-            {...register('estado', {
-              required: 'Selecciona un estado',
-              setValueAs: (v: string) => (v === 'inactivo' ? 'inactivo' : 'activo'),
-            })}
-            errorText={errors.estado?.toString()}
-          />
-        </div>
-
-    )
-}
         <div>
           <Input
             label="Teléfono"
@@ -196,17 +227,16 @@ const FormUsuarios: React.FC<Props> = ({ mode, initial, onSuccess, onCancel }) =
           />
         </div>
 
-        {/* ------ Password & Confirm Password ------ */}
+        {/* Password & Confirm */}
         <div>
           <Input
             label="Contraseña"
             type="password"
             placeholder={isEdit ? 'Deja en blanco para no cambiar' : 'Mínimo 6 caracteres'}
             {...register('password', {
-              // En crear es obligatorio; en editar es opcional
               required: !isEdit ? 'Obligatorio' : false,
               validate: (v) => {
-                if (isEdit && (!v || v.length === 0)) return true; // opcional en edit
+                if (isEdit && (!v || v.length === 0)) return true;
                 if (typeof v !== 'string') return 'password must be a string';
                 if (v.length < 6) return 'password must be longer than or equal to 6 characters';
                 return true;
@@ -223,7 +253,7 @@ const FormUsuarios: React.FC<Props> = ({ mode, initial, onSuccess, onCancel }) =
             placeholder="Repite la contraseña"
             {...register('confirmPassword', {
               validate: (cv) => {
-                // Si no se está cambiando password en edit, permitir vacío
+                const password = watch('password');
                 if (isEdit && (!password || password.length === 0)) return true;
                 if (typeof cv !== 'string') return 'password must be a string';
                 if (password && cv !== password) return 'Las contraseñas no coinciden';
