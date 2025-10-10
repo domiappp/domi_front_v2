@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Input } from "../../shared/components/Input"; // 🔁 ajusta la ruta según tu proyecto
 
 type FormValues = {
   transferencia: boolean;
@@ -22,12 +21,11 @@ const FormPagos: React.FC = () => {
       direccionRecogida: "",
       telefonoContacto: "",
     },
-    shouldUnregister: true, // ✅ oculta campos = no se validan ni envían
+    shouldUnregister: true,
   });
 
   const esTransferencia = watch("transferencia");
 
-  // Si es transferencia, limpia solo la dirección (el teléfono permanece)
   useEffect(() => {
     if (esTransferencia) {
       setValue("direccionRecogida", "");
@@ -41,60 +39,100 @@ const FormPagos: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-base-200 rounded-2xl shadow-lg">
-      <h2 className="text-2xl font-bold text-center mb-6">Formulario de Pagos 💳</h2>
+    <section className="flex justify-center items-center py-2 px-0">
+      <div className="w-full max-w-xl">
+        {/* Tarjeta envolvente */}
+        <div className="card bg-[#fff]">
+          <div className="card-body">
+            <h2 className="text-xl lg:text-3xl font-bold text-center mb-2">
+              Formulario de Pagos 💳
+            </h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {/* Checkbox: Pago por transferencia */}
-        <div className="form-control">
-          <label className="label cursor-pointer justify-start gap-3">
-            <input
-              type="checkbox"
-              className="checkbox checkbox-primary"
-              {...register("transferencia")}
-            />
-            <span className="label-text">Pago por transferencia (si aplica)</span>
-          </label>
-          <span className="label-text-alt opacity-70 mt-1">
-            {esTransferencia
-              ? "Has seleccionado transferencia. No necesitas dirección, pero el teléfono sigue siendo obligatorio."
-              : "Si no es transferencia, indica dirección de recogida y teléfono de contacto (ambos obligatorios)."}
-          </span>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* Selección de transferencia */}
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-3">
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-primary"
+                    {...register("transferencia")}
+                  />
+                  <span className="label-text">
+                    Pago por transferencia
+                  </span>
+                </label>
+                <span className="text-xs mt-1 text-base-content/60">
+                  {esTransferencia
+                    ? "Has seleccionado transferencia. No necesitas dirección, pero el teléfono sigue siendo obligatorio."
+                    : "Si no es transferencia, indica dirección de recogida y teléfono de contacto (ambos obligatorios)."}
+                </span>
+              </div>
+
+              {/* Dirección de recogida – solo visible si NO es transferencia */}
+              {!esTransferencia && (
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">
+                      Dirección de recogida del dinero
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Calle 123, Ciudad"
+                    className="input input-bordered w-full"
+                    {...register("direccionRecogida", {
+                      required: "La dirección de recogida es obligatoria",
+                    })}
+                  />
+                  {errors.direccionRecogida && (
+                    <p className="text-error text-sm mt-1">
+                      {errors.direccionRecogida.message}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Teléfono de contacto – siempre visible */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Teléfono de contacto</span>
+                </label>
+                <input
+                  type="tel"
+                  placeholder="+57 300 123 4567"
+                  className="input input-bordered w-full"
+                  {...register("telefonoContacto", {
+                    required: "El teléfono de contacto es obligatorio",
+                    pattern: {
+                      value: /^[0-9+\s()\-]{7,}$/,
+                      message: "Ingrese un número de teléfono válido",
+                    },
+                  })}
+                />
+                {errors.telefonoContacto && (
+                  <p className="text-error text-sm mt-1">
+                    {errors.telefonoContacto.message}
+                  </p>
+                )}
+                {esTransferencia && (
+                  <span className="text-xs mt-1 text-base-content/60">
+                    Usaremos este número para confirmar la transferencia.
+                  </span>
+                )}
+              </div>
+
+
+
+              <button type="submit" className="btn bg-[#E76B51] text-white btn-block mt-4">
+                Confirmar Pago
+              </button>
+
+            </form>
+          </div>
         </div>
-
-        {/* Dirección de recogida (solo si NO es transferencia) */}
-        {!esTransferencia && (
-          <Input
-            label="Dirección de recogida del dinero"
-            placeholder="Calle 123, Ciudad"
-            errorText={errors.direccionRecogida?.message}
-            {...register("direccionRecogida", {
-              required: "La dirección de recogida es obligatoria",
-            })}
-          />
-        )}
-
-        {/* Teléfono de contacto (SIEMPRE visible y obligatorio) */}
-        <Input
-          label="Teléfono de contacto"
-          type="tel"
-          placeholder="+57 300 123 4567"
-          helperText={esTransferencia ? "Usaremos este número para confirmar la transferencia." : undefined}
-          errorText={errors.telefonoContacto?.message}
-          {...register("telefonoContacto", {
-            required: "El teléfono de contacto es obligatorio",
-            pattern: {
-              value: /^[0-9+\s()-]{7,}$/,
-              message: "Ingrese un número de teléfono válido",
-            },
-          })}
-        />
-
-        <button type="submit" className="btn btn-primary w-full">
-          Guardar pago
-        </button>
-      </form>
-    </div>
+      </div>
+    </section>
   );
 };
 

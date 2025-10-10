@@ -1,6 +1,5 @@
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Input } from "../../shared/components/Input"; // 👈 Asegúrate de ajustar la ruta según tu estructura
 
 type FormValues = {
   listaCompras: string;
@@ -21,61 +20,88 @@ const FormCompras: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-base-200 rounded-2xl shadow-lg">
-      <h2 className="text-2xl font-bold text-center mb-6">
-        Formulario de Compras 🛒
-      </h2>
+    <section className="flex justify-center items-center py-2 px-0">
+      <div className="w-full max-w-xl">
+        <div className="card bg-[#fff]">
+          <div className="card-body">
+            <h2 className="text-xl lg:text-3x text-[#E76B51] font-bold text-center mb-2">
+              Formulario de Compras 🛒
+            </h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Lista de compras */}
-        <div>
-          <label className="label">
-            <span className="label-text font-semibold">Lista de compras</span>
-          </label>
-          <textarea
-            {...register("listaCompras", {
-              required: "La lista de compras es obligatoria",
-            })}
-            className="textarea textarea-bordered w-full"
-            placeholder="Ejemplo: Pan, Leche, Huevos..."
-          ></textarea>
-          {errors.listaCompras && (
-            <p className="text-error text-sm mt-1">
-              {errors.listaCompras.message}
-            </p>
-          )}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* Lista de compras */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-semibold">
+                    Lista de compras
+                  </span>
+                </label>
+                <textarea
+                  {...register("listaCompras", {
+                    required: "La lista de compras es obligatoria",
+                  })}
+                  className="textarea textarea-bordered w-full"
+                  placeholder="Ejemplo: Pan, Leche, Huevos..."
+                ></textarea>
+                {errors.listaCompras && (
+                  <p className="text-error text-sm mt-1">
+                    {errors.listaCompras.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Dirección de entrega */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Dirección de entrega</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Calle 123, Ciudad"
+                  className="input input-bordered w-full"
+                  {...register("direccionEntrega", {
+                    required: "La dirección es obligatoria",
+                  })}
+                />
+                {errors.direccionEntrega && (
+                  <p className="text-error text-sm mt-1">
+                    {errors.direccionEntrega.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Teléfono de entrega */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Teléfono de entrega</span>
+                </label>
+                <input
+                  type="tel"
+                  placeholder="+34 600 123 456"
+                  className="input input-bordered w-full"
+                  {...register("telefonoEntrega", {
+                    required: "El teléfono es obligatorio",
+                    pattern: {
+                      value: /^[0-9+\s()\-]+$/,
+                      message: "Ingrese un número de teléfono válido",
+                    },
+                  })}
+                />
+                {errors.telefonoEntrega && (
+                  <p className="text-error text-sm mt-1">
+                    {errors.telefonoEntrega.message}
+                  </p>
+                )}
+              </div>
+
+              <button type="submit" className="btn bg-[#E76B51] text-white btn-block mt-4">
+                Confirmar Compra
+              </button>
+            </form>
+          </div>
         </div>
-
-        {/* Dirección de entrega */}
-        <Input
-          label="Dirección de entrega"
-          placeholder="Calle 123, Ciudad"
-          errorText={errors.direccionEntrega?.message}
-          {...register("direccionEntrega", {
-            required: "La dirección es obligatoria",
-          })}
-        />
-
-        {/* Teléfono de entrega */}
-        <Input
-          label="Teléfono de entrega"
-          type="tel"
-          placeholder="+34 600 123 456"
-          errorText={errors.telefonoEntrega?.message}
-          {...register("telefonoEntrega", {
-            required: "El teléfono es obligatorio",
-            pattern: {
-              value: /^[0-9+\s()-]+$/,
-              message: "Ingrese un número de teléfono válido",
-            },
-          })}
-        />
-
-        <button type="submit" className="btn btn-primary w-full mt-4">
-          Enviar
-        </button>
-      </form>
-    </div>
+      </div>
+    </section>
   );
 };
 

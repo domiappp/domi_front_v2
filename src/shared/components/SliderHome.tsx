@@ -131,7 +131,7 @@ const SliderHome: React.FC = () => {
                 />
 
                 {/* Overlay oscuro (no bloquea el click del botón) */}
-                <div className="pointer-events-none absolute inset-0 bg-black/10 lg:bg-black/10 z-10" />
+                <div className="pointer-events-none absolute inset-0 bg-black/20 lg:bg-black/10 z-10" />
 
                 {/* Botón absoluto (solo si hay ruta) */}
                 {item.ruta ? (

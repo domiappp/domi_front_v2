@@ -88,13 +88,13 @@ if (uiView === 'form') {
   return (
     <section className="w-full">
       {/* Contenedor centrado y con padding responsive */}
-      <div className="mx-auto max-w-6xl px-3 py-6 md:py-10">
+      <div className="mx-auto max-w-full px-3 ">
         {/* Layout responsive: en móvil solo form; en md+ dos columnas y centrado vertical */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 md:items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 md:items-start">
           
           {/* FORM: centrado y con ancho cómodo */}
           <div className="order-2 md:order-1">
-            <div className="mx-auto w-full max-w-xl">
+            <div className="mx-auto w-full max-w-full">
               {formType === 'pedido'   && <FormCompras />}
               {formType === 'recogida' && <FormRecogida />}
               {formType === 'pago'     && <FormPagos />}

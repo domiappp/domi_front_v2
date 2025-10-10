@@ -38,11 +38,10 @@ const HomePage: React.FC = () => {
       </div>
 
       <CategoriesSlider />
-
+{/* 
       <div className="px-3">
-        {/* Asegúrate que InputSearch acepte { defaultValue, onChange, placeholder } */}
         <InputSearch {...inputProps} />
-      </div>
+      </div> */}
 
       <div className="mb-50">
         <ComerciosPorServicioGrid />

@@ -1,12 +1,11 @@
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Input } from "../../shared/components/Input"; // 🔁 ajusta la ruta según tu proyecto
 
 type FormValues = {
   direccionRecogida: string;
   telefonoRecogida: string;
   direccionEntrega: string;
-  telefonoEntrega?: string; // opcional
+  telefonoEntrega?: string;
 };
 
 const FormRecogida: React.FC = () => {
@@ -29,70 +28,118 @@ const FormRecogida: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-base-200 rounded-2xl shadow-lg">
-      <h2 className="text-2xl font-bold text-center mb-6">
-        Formulario de Recogida y Entrega 📦
-      </h2>
+    <section className="flex justify-center items-center py-2 px-0">
+      <div className="w-full max-w-xl">
+        <div className="card bg-[#fff]">
+          <div className="card-body">
+            <h2 className="text-xl lg:text-3xl font-bold text-center mb-2">
+              Formulario de Recogida y Entrega 📦
+            </h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Dirección de recogida (requerida) */}
-        <Input
-          label="Dirección de recogida"
-          placeholder="Calle 123, Ciudad"
-          errorText={errors.direccionRecogida?.message}
-          {...register("direccionRecogida", {
-            required: "La dirección de recogida es obligatoria",
-            minLength: { value: 5, message: "Demasiado corta" },
-          })}
-        />
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* Dirección de recogida (requerida) */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Dirección de recogida</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Calle 123, Ciudad"
+                  className="input input-bordered w-full"
+                  {...register("direccionRecogida", {
+                    required: "La dirección de recogida es obligatoria",
+                    minLength: { value: 5, message: "Demasiado corta" },
+                  })}
+                />
+                {errors.direccionRecogida && (
+                  <p className="text-error text-sm mt-1">
+                    {errors.direccionRecogida.message}
+                  </p>
+                )}
+              </div>
 
-        {/* Teléfono de recogida (requerido) */}
-        <Input
-          label="Teléfono de recogida"
-          type="tel"
-          placeholder="+57 300 123 4567"
-          helperText="Incluye indicativo si aplica"
-          errorText={errors.telefonoRecogida?.message}
-          {...register("telefonoRecogida", {
-            required: "El teléfono de recogida es obligatorio",
-            pattern: {
-              value: /^[0-9+\s()-]{7,}$/i,
-              message: "Ingrese un número de teléfono válido",
-            },
-          })}
-        />
+              {/* Teléfono de recogida (requerido) */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Teléfono de recogida</span>
+                </label>
+                <input
+                  type="tel"
+                  placeholder="+57 300 123 4567"
+                  className="input input-bordered w-full"
+                  {...register("telefonoRecogida", {
+                    required: "El teléfono de recogida es obligatorio",
+                    pattern: {
+                      value: /^[0-9+\s()\-]{7,}$/i,
+                      message: "Ingrese un número de teléfono válido",
+                    },
+                  })}
+                />
+                {errors.telefonoRecogida && (
+                  <p className="text-error text-sm mt-1">
+                    {errors.telefonoRecogida.message}
+                  </p>
+                )}
+                <span className="text-xs mt-1 text-base-content/60">
+                  Incluye indicativo si aplica.
+                </span>
+              </div>
 
-        {/* Dirección de entrega (requerida) */}
-        <Input
-          label="Dirección de entrega"
-          placeholder="Carrera 45 # 12-34, Ciudad"
-          errorText={errors.direccionEntrega?.message}
-          {...register("direccionEntrega", {
-            required: "La dirección de entrega es obligatoria",
-            minLength: { value: 5, message: "Demasiado corta" },
-          })}
-        />
+              {/* Dirección de entrega (requerida) */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Dirección de entrega</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Carrera 45 # 12-34, Ciudad"
+                  className="input input-bordered w-full"
+                  {...register("direccionEntrega", {
+                    required: "La dirección de entrega es obligatoria",
+                    minLength: { value: 5, message: "Demasiado corta" },
+                  })}
+                />
+                {errors.direccionEntrega && (
+                  <p className="text-error text-sm mt-1">
+                    {errors.direccionEntrega.message}
+                  </p>
+                )}
+              </div>
 
-        {/* Teléfono de entrega (opcional) */}
-        <Input
-          label="Teléfono de entrega (opcional)"
-          type="tel"
-          placeholder="+57 300 987 6543"
-          helperText="Solo si se requiere contacto en el destino"
-          errorText={errors.telefonoEntrega?.message}
-          {...register("telefonoEntrega", {
-            pattern: {
-              value: /^[0-9+\s()-]{7,}$/i,
-              message: "Ingrese un número de teléfono válido",
-            },
-          })}
-        />
+              {/* Teléfono de entrega (opcional) */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Teléfono de entrega (opcional)</span>
+                </label>
+                <input
+                  type="tel"
+                  placeholder="+57 300 987 6543"
+                  className="input input-bordered w-full"
+                  {...register("telefonoEntrega", {
+                    pattern: {
+                      value: /^[0-9+\s()\-]{7,}$/i,
+                      message: "Ingrese un número de teléfono válido",
+                    },
+                  })}
+                />
+                {errors.telefonoEntrega && (
+                  <p className="text-error text-sm mt-1">
+                    {errors.telefonoEntrega.message}
+                  </p>
+                )}
+                <span className="text-xs mt-1 text-base-content/60">
+                  Solo si se requiere contacto en el destino.
+                </span>
+              </div>
 
-        <button type="submit" className="btn btn-primary w-full mt-2">
-          Guardar
-        </button>
-      </form>
-    </div>
+              <button type="submit" className="btn bg-[#E76B51] text-white btn-block mt-4">
+                Confirmar Recogida
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 
