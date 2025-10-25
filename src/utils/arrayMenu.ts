@@ -60,4 +60,40 @@ export const MENU_ESTATICO: MenuItem[] = [
     requireModule: "publicidad",
     requireRole: "administrador", // ejemplo de restricción por rol
   },
+ {
+    nombre: "Categorias",
+    ruta: "/categorias",
+    icono: "FolderTree ",
+    orden: 99,
+    requireModule: "categories",
+    requireRole: "comercio", // ejemplo de restricción por rol
+  },
+  
+  {
+    nombre: "Productos",
+    ruta: "/productos",
+    icono: "Product ",
+    orden: 99,
+    requireModule: "products",
+    requireRole: "comercio", // ejemplo de restricción por rol
+  },
+
+
+  {
+    nombre: "Horarios",
+    ruta: "/horarios",
+    icono: "Clock",
+    orden: 99,
+    requireModule: "horarios",
+    requireRole: "comercio", // ejemplo de restricción por rol
+  },
+
+   {
+    nombre: "Servicios",
+    ruta: "/servicios",
+    icono: "Tags",
+    orden: 99,
+    requireModule: "services",
+    requireRole: "administrador", // ejemplo de restricción por rol
+  },
 ];

@@ -197,7 +197,7 @@ const apiItems = useMemo<Categoria[]>(() => {
   }
 
   return (
-    <div className="w-full px-4 pt-2.5 pb-3">
+    <div className="w-full px-4 pt-2.5 pb-3 bg-white">
       <style>{`
         .categories-swiper .swiper-pagination-bullet { background: #F2F2F2; opacity: 1; }
         .categories-swiper .swiper-pagination-bullet-active { background: #FF6600; }
@@ -205,14 +205,14 @@ const apiItems = useMemo<Categoria[]>(() => {
 
       <div className="w-full max-w-5xl mx-auto">
         <div className="flex justify-between">
-          <h2 className="text-lg font-bold mb-4 text-[#333333]">Seleccionar Servicio</h2>
+          <h2 className="text-lg font-semibold xl:font-bold  text-gray-800">Seleccionar Servicio</h2>
           <span className="lg:hidden text-[#FF6600]">
             <ArrowRight color="#FF6600" />
           </span>
         </div>
 
         {renderRow(firstRow)}
-        {secondRow.length > 0 && <div className="mt-2">{renderRow(secondRow)}</div>}
+        {secondRow.length > 0 && <div className="-mt-3.5">{renderRow(secondRow)}</div>}
       </div>
     </div>
   );

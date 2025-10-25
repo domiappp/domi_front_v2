@@ -33,7 +33,7 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      <div className="pt-1.5 lg:p-0 ">
+      <div>
         <SliderHome />
       </div>
 
@@ -43,7 +43,7 @@ const HomePage: React.FC = () => {
         <InputSearch {...inputProps} />
       </div> */}
 
-      <div className="mb-50">
+      <div className="mb-50 bg-gray-50">
         <ComerciosPorServicioGrid />
       </div>
     </>

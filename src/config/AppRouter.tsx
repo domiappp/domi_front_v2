@@ -16,7 +16,11 @@ const Populares = lazy(() => import("../pages/public/PopularesPage"));
 const Comercios = lazy(() => import("../pages/admin/ComerciosPage"));
 const Publicidad = lazy(() => import("../pages/admin/PublicidadPage"));
 const Usuarios = lazy(() => import("../pages/admin/UsuariosPage"));
+const Categorias = lazy(() => import("../pages/comercio/Categorias"));
+const Productos = lazy(() => import("../pages/comercio/Productos"));
+const Horarios = lazy(() => import("../pages/comercio/ComercioHorariosPage"));
 
+const Servicios = lazy(() => import("../pages/admin/ServicioPage"));
 
 /** ---------- Tipos de config ---------- */
 type LayoutCmp = React.ComponentType; // Layout que internamente renderiza <Outlet />
@@ -92,6 +96,39 @@ const privateRoutes: PrivateRouteCfg[] = [
         requireModule: "publicidad",
         requireRole: "administrador",     // 👈 rol requerido (o ["admin","super"])
     },
+
+    {
+        path: "/categorias",
+        element: <Categorias />,
+        layout: MainLayout,               // 👈 esta requiere MainLayout
+        requireModule: "categories",
+        requireRole: "comercio",     // 👈 rol requerido (o ["admin","super"])
+    },
+
+    {
+        path: "/productos",
+        element: <Productos />,
+        layout: MainLayout,               // 👈 esta requiere MainLayout
+        requireModule: "products",
+        requireRole: "comercio",     // 👈 rol requerido (o ["admin","super"])
+    },
+
+    {
+        path: "/horarios",
+        element: <Horarios />,
+        layout: MainLayout,               // 👈 esta requiere MainLayout
+        requireModule: "horarios",
+        requireRole: "comercio",     // 👈 rol requerido (o ["admin","super"])
+    },
+
+     {
+        path: "/servicios",
+        element: <Servicios />,
+        layout: MainLayout,               // 👈 esta requiere MainLayout
+        requireModule: "services",
+        requireRole: "administrador",     // 👈 rol requerido (o ["admin","super"])
+    },
+
     // Ejemplo extra:
     // {
     //   path: "/reportes",

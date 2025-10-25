@@ -8,7 +8,7 @@ const MenuMovil: React.FC = () => {
   const user = useAuthStore((s) => s.user);
 
   return (
-    <div className="dock dock-xl text-center h-[70px] z-30 bg-[#F2F2F2] shadow-inner">
+    <div className="dock dock-xl text-center h-[60px] xl:h-[70px] z-30 bg-[#F2F2F2]">
       {/* Inicio */}
       <NavLink to="/domicilios-pitalito" end>
         {({ isActive }) => (

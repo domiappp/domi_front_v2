@@ -183,3 +183,8 @@ button {
 .rdt_TableCell {
   background-color: transparent !important;
 }
+
+
+.label-text {
+  color: black !important;
+}

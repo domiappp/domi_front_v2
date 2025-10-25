@@ -18,7 +18,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       <label className={`form-control w-full ${containerClassName}`}>
         {label && (
           <span className="label">
-            <span className="label-text">{label}</span>
+            <span className="label-text text-sm">{label}</span>
           </span>
         )}
         <select

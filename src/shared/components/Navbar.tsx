@@ -41,7 +41,7 @@ const Navbar: React.FC = () => {
         {/* Izquierda: Logo + Marca */}
         <div className="flex min-w-0 items-center gap-3">
           <a href="/" className="group inline-flex items-center gap-2" aria-label="Inicio">
-            <div
+            {/* <div
               className="relative grid size-10 place-items-center overflow-hidden rounded-full transition-transform group-hover:scale-105 ring-2"
               style={{
                 ringColor: BRAND.ink,
@@ -56,12 +56,12 @@ const Navbar: React.FC = () => {
                 className="relative z-10 h-6 w-6 object-contain"
                 loading="lazy"
               />
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="truncate text-lg md:text-2xl font-semibold tracking-tight text-white">
+            </div> */}
+            <div className="flex items-center uppercase gap-1">
+              <span className="truncate text-2xl tracking-tight text-white">
                 Domicilios
               </span>
-              <span className="text-lg md:text-2xl font-light" style={{ color: BRAND.accent }}>
+              <span className="text-2xl font-bold text-warning ">
                 W
               </span>
             </div>
@@ -99,7 +99,7 @@ const Navbar: React.FC = () => {
             />
           </div> */}
 
-          <button
+          {/* <button
             type="button"
             aria-label="Abrir carrito"
             className="relative grid size-10 place-items-center rounded-xl border backdrop-blur-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
@@ -119,7 +119,7 @@ const Navbar: React.FC = () => {
             >
               2
             </span>
-          </button>
+          </button> */}
 
           <details className="group relative">
             <summary

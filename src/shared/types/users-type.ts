@@ -4,6 +4,8 @@ export type User = {
   id: number;
   email: string;
   rol: Rol;
+    comercioId?: number;        // 👈 NUEVO
+
 };
 
 export type LoginSuccess = {

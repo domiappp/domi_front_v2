@@ -6,7 +6,7 @@ type Reason = 'expired' | 'logout' | undefined
 
 type AuthState = {
   // 👇 incluye rol en el tipo del user
-  user: (User & { modules: string[]; rol: string }) | null
+user: (User & { modules: string[]; rol: string; comercioId?: number }) | null
   isLoading: boolean
   error: string | null
   // 👇 motivo para mostrar mensaje en /login (sesión expirada, etc.)

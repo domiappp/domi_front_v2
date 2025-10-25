@@ -1,10 +1,9 @@
-// src/features/servicios/LayoutServices.tsx
 import React from 'react';
-import TablaServices from './TablaServices';
-import FormServices from './FormServices';
 import { useGlobalModal } from '../../store/modal.store';
+import FormProductos from './FormProductos';
+import TablaProductos from './TablaProductos';
 
-const LayoutServices: React.FC = () => {
+const LayoutProductos: React.FC = () => {
   const { open } = useGlobalModal();
 
   return (
@@ -14,19 +13,19 @@ const LayoutServices: React.FC = () => {
           className="btn btn-primary"
           onClick={() =>
             open({
-              title: 'Registrar servicio',
-              content: <FormServices mode="create" />,
+              title: 'Registrar producto',
+              content: <FormProductos mode="create" />,
               size: 'xl',
             })
           }
         >
-          Nuevo servicio
+          Nuevo producto
         </button>
       </div>
 
-      <TablaServices  />
+      <TablaProductos />
     </>
   );
 };
 
-export default LayoutServices;
+export default LayoutProductos;

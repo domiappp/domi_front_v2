@@ -63,7 +63,7 @@ const SliderHome: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-[28vh] lg:h-[48vh] scale-95 lg:scale-100 rounded-2xl overflow-hidden lg:rounded-none">
+    <div className="relative w-full h-[26vh] lg:h-[48vh] overflow-hidden lg:rounded-none">
       {/* Badges arriba-derecha */}
       <div className="absolute top-5 right-6 z-10 flex gap-3">
         <div className="badge badge-warning">Pitalito - Huila</div>
@@ -91,7 +91,7 @@ const SliderHome: React.FC = () => {
       {/* Botones personalizados (con selectores CSS) */}
       <button
         aria-label="Anterior"
-        className="btn-prev group absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/40 backdrop-blur p-2
+        className="btn-prev hidden group absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/40 backdrop-blur p-2
                    hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/60 transition shadow-md"
       >
         <ChevronLeft className="size-5 text-white group-active:translate-x-[-2px] transition" />
@@ -99,7 +99,7 @@ const SliderHome: React.FC = () => {
 
       <button
         aria-label="Siguiente"
-        className="btn-next group absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/40 backdrop-blur p-2
+        className="btn-next hidden group absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/40 backdrop-blur p-2
                    hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/60 transition shadow-md"
       >
         <ChevronRight className="size-5 text-white group-active:translate-x-[2px] transition" />
@@ -131,7 +131,7 @@ const SliderHome: React.FC = () => {
                 />
 
                 {/* Overlay oscuro (no bloquea el click del botón) */}
-                <div className="pointer-events-none absolute inset-0 bg-black/20 lg:bg-black/10 z-10" />
+                {/* <div className="pointer-events-none absolute inset-0 bg-black/10 lg:bg-black/10 z-10" /> */}
 
                 {/* Botón absoluto (solo si hay ruta) */}
                 {item.ruta ? (
