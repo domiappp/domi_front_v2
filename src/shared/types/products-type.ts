@@ -72,3 +72,11 @@ export interface ListByComercioCategoriaParams {
   page?: number;
   search?: string;
 }
+
+
+export interface SearchProductsParams {
+  search: string;
+  comercioId?: number;
+  categoriaId?: number;
+  page?: number; // backend ya usa 25 fijo
+}

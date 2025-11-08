@@ -35,3 +35,27 @@ export interface CategoriasParams {
   sortBy?: 'id' | 'nombre';
   sortOrder?: 'ASC' | 'DESC';
 }
+
+
+// Datos públicos del comercio
+export interface CommercePublic {
+  id: number;
+  nombre_comercial: string;
+  descripcion?: string | null;
+  logo_url?: string | null;
+  direccion: string;
+  telefono: string;
+  estado_comercio: number; // 1 = abierto, 0 = cerrado (o como lo manejes)
+}
+
+// Categoría pública
+export interface CategoriaPublic {
+  id: number;
+  nombre: string;
+}
+
+// Respuesta del endpoint /comercios/:id/categorias
+export interface ComercioCategoriasResponse {
+  comercio: CommercePublic;
+  categorias: CategoriaPublic[];
+}

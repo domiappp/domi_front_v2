@@ -12,7 +12,7 @@ type Props = {
 const ProductoCard: React.FC<Props> = ({ id, nombre, descripcion, precio, imagen, onAdd }) => {
   return (
     <div className="bg-white rounded-xl shadow p-3 flex flex-col">
-      <img src={imagen} alt={nombre} className="h-32 w-full object-cover rounded-lg mb-2" />
+      <img src={imagen} alt={nombre} className="h-44 w-full object-cover rounded-lg mb-2" />
       <h3 className="font-semibold text-sm">{nombre}</h3>
       <p className="text-xs text-gray-500 line-clamp-2">{descripcion}</p>
       <div className="flex justify-between items-center mt-2">

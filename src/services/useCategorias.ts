@@ -7,6 +7,7 @@ import type {
   CreateCategoriaPayload,
   UpdateCategoriaPayload,
   CategoriasParams,
+  ComercioCategoriasResponse,
 } from "../shared/types/categoriasTypes"
 
 
@@ -99,6 +100,25 @@ export const useDeleteCategoria = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categorias'] })
+    },
+  })
+}
+
+
+
+// ✅ Hook: obtener una categoría por ID
+export const useCategoriaByComercio = (id?: number) => {
+  return useQuery<ComercioCategoriasResponse>({
+    queryKey: ['categoria-comercio', id],
+    enabled: !!id,
+    queryFn: async () => {
+      try {
+        const { data } = await api.get<ComercioCategoriasResponse>(`/comercio/listar-comercio/categorias/${id}`)
+        return data
+      } catch (error) {
+        const axiosError = error as AxiosError<any>
+        throw new Error(axiosError.response?.data?.message || 'Error al cargar la categoría')
+      }
     },
   })
 }

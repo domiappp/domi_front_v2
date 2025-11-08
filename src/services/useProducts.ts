@@ -9,6 +9,7 @@ import type {
   UpdateProductPayload,
   ProductsParams,
   ListByComercioCategoriaParams,
+  SearchProductsParams,
 } from "../shared/types/products-type";
 
 // ✅ Hook: listar productos (con filtros, paginación y orden)
@@ -135,6 +136,29 @@ export const useProductsByComercioCategoria = (params: ListByComercioCategoriaPa
         const axiosError = error as AxiosError<any>;
         throw new Error(
           axiosError.response?.data?.message || "Error al listar productos por comercio/categoría"
+        );
+      }
+    },
+  });
+};
+
+
+// ✅ Hook: buscar productos (relevancia + paginado fijo 25)
+export const useSearchProducts = (params: SearchProductsParams) => {
+  return useQuery<ProductsResponse>({
+    queryKey: ["products-search", params],
+    enabled: !!params?.search?.trim(), // solo dispara si hay término de búsqueda
+    queryFn: async () => {
+      try {
+        const { data } = await api.get<ProductsResponse>("/productos/search", {
+          params,
+        });
+        return data;
+      } catch (error) {
+        const axiosError = error as AxiosError<any>;
+        throw new Error(
+          axiosError.response?.data?.message ||
+            "Error al buscar productos"
         );
       }
     },

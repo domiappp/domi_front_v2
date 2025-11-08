@@ -1,13 +1,13 @@
-// src/components/CategoriaProductos.tsx
+// src/shared/components/CategoriaProductos.tsx
 import React from "react"
 import { Swiper, SwiperSlide } from "swiper/react"
 import { Pagination } from "swiper/modules"
-
+import { CategoriaPublic } from "../types/categoriasTypes"
 
 type Props = {
-  categorias: string[]
-  categoriaActiva: string
-  onChange: (c: string) => void
+  categorias?: CategoriaPublic[]
+  categoriaActiva: "Todas" | number
+  onChange: (categoriaId: "Todas" | number) => void
 }
 
 const CategoriaProductos: React.FC<Props> = ({
@@ -29,17 +29,32 @@ const CategoriaProductos: React.FC<Props> = ({
         spaceBetween={8}
         pagination={{ clickable: true }}
       >
+        {/* Chip "Todas" */}
+        <SwiperSlide key="todas" className="!w-auto !mr-2">
+          <button
+            className={`px-4 py-2 rounded-full border text-sm whitespace-nowrap transition ${
+              categoriaActiva === "Todas"
+                ? "bg-orange-500 text-white border-orange-500"
+                : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
+            }`}
+            onClick={() => onChange("Todas")}
+          >
+            Todas
+          </button>
+        </SwiperSlide>
+
+        {/* Chips dinámicas */}
         {categorias.map((c) => (
-          <SwiperSlide key={c} className="!w-auto !mr-2">
+          <SwiperSlide key={c.id} className="!w-auto !mr-2">
             <button
               className={`px-4 py-2 rounded-full border text-sm whitespace-nowrap transition ${
-                categoriaActiva === c
+                categoriaActiva === c.id
                   ? "bg-orange-500 text-white border-orange-500"
                   : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
               }`}
-              onClick={() => onChange(c)}
+              onClick={() => onChange(c.id)}
             >
-              {c}
+              {c.nombre}
             </button>
           </SwiperSlide>
         ))}

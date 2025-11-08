@@ -70,7 +70,6 @@ const Navbar: React.FC = () => {
 
         {/* Centro: enlaces + ubicación */}
         <div className="hidden md:flex items-center gap-6">
-          <NavLink href="#ofertas">Ofertas</NavLink>
           <NavLink href="#contacto">Contacto</NavLink>
 
           <span
@@ -194,20 +193,9 @@ const Navbar: React.FC = () => {
           </div>
           <div className="grid gap-1">
             <a onClick={close} href="#categorias" className="rounded-lg px-3 py-2 text-white/90 hover:bg-white/10">Categorías</a>
-            <a onClick={close} href="#ofertas" className="rounded-lg px-3 py-2 text-white/90 hover:bg-white/10">Ofertas</a>
-            <a onClick={close} href="#contacto" className="rounded-lg px-3 py-2 text-white/90 hover:bg-white/10">Contacto</a>
+            <a onClick={close} href="#contacto" className="rounded-lg px-3 py-2 text-white/90 hover:bg-white/10">Quieres ser aliado?</a>
           </div>
-          <div className="mt-3">
-            <input
-              type="search"
-              placeholder="Buscar…"
-              className="w-full rounded-xl border px-3 py-2 text-sm text-white placeholder-white/60"
-              style={{
-                backgroundColor: "rgba(255,255,255,0.12)",
-                borderColor: "rgba(255,255,255,0.10)",
-              }}
-            />
-          </div>
+   
         </div>
       </motion.div>
     </header>
