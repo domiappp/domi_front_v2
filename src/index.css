@@ -9,6 +9,11 @@
 /* @import "swiper/css/pagination"; */
 @import "swiper/css/navigation";
 
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Poppins', sans-serif;
 }
@@ -188,3 +193,5 @@ button {
 .label-text {
   color: black !important;
 }
+
+

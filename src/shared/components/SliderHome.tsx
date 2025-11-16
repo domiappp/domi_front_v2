@@ -122,7 +122,7 @@ const SliderHome: React.FC = () => {
                 <img
                   src={src}
                   alt={`Publicidad ${item.id}`}
-                  className="absolute inset-0 w-full h-full object-cover select-none scale-105 md:scale-110 transition-transform duration-[3500ms] ease-out"
+                  className="absolute inset-0 w-full h-full object-cover select-none "
                   draggable={false}
                   loading="eager"
                 />
@@ -131,7 +131,7 @@ const SliderHome: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/55 to-black/5" />
 
                 {/* Contenido principal alineado a la izquierda */}
-                <div className="relative z-20 flex h-full items-center w-full px-5 sm:px-7 lg:px-14">
+                <div className="relative z-20 flex h-full items-center w-full px-5 sm:px-7 lg:px-14 min-w-full">
                   <div className="max-w-4xl space-y-3 lg:space-y-5">
                     {/* Badge estilo "EN DIRECTO" */}
                     <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-orange-500 px-3.5 py-1.5 text-[11px] sm:text-xs lg:text-sm font-semibold uppercase tracking-[0.15em] shadow-md shadow-black/40">

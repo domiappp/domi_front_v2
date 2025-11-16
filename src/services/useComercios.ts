@@ -10,8 +10,14 @@ export const comercioKeys = {
   all: ['comercios'] as const,
   list: (params: Partial<ListComerciosParams> = {}) =>
     [...comercioKeys.all, 'list', normalizeListParams(params)] as const,
+
+  // 👇 AGREGA ESTO
+  popularList: (params: Partial<ListComerciosParams> = {}) =>
+    [...comercioKeys.all, 'popular-list', normalizeListParams(params)] as const,
+
   detail: (id: number) => [...comercioKeys.all, 'detail', id] as const,
 }
+
 
 function normalizeListParams(p: Partial<ListComerciosParams>): Partial<ListComerciosParams> {
   return {
@@ -154,4 +160,40 @@ export function useComercioClickView() {
       );
     },
   });
+}
+
+// =========================
+// LISTAR POPULARES (nuevo, FIX sortBy)
+// =========================
+export function useComerciosPopulares(
+  params?: ListComerciosParams,
+  opts?: { enabled?: boolean; staleTime?: number },
+) {
+  const enabled = opts?.enabled ?? true
+
+  const base = normalizeListParams(params ?? {})
+  const norm: Partial<ListComerciosParams> = {
+    ...base,
+    // 👇 usamos un valor permitido por el DTO
+    sortBy: params?.sortBy ?? 'created_at',
+    sortOrder: (params?.sortOrder ?? 'DESC') as SortOrder,
+  }
+
+  return useQuery<PagedResponse<Commerce>, Error>({
+    queryKey: comercioKeys.popularList(norm),
+    queryFn: async ({ signal }) => {
+      const { data } = await api.get<PagedResponse<Commerce>>(
+        '/comercio/listar-populares',
+        {
+          withCredentials: true,
+          params: norm,
+          signal,
+        }
+      )
+      return data
+    },
+    enabled,
+    retry: false,
+    staleTime: opts?.staleTime ?? DEFAULT_STALE_TIME,
+  })
 }

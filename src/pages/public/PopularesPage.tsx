@@ -1,10 +1,10 @@
 import React from 'react'
-import { ListaComerciosLateralDemo } from '../../shared/components/ComercioLateralCard'
+import { ListaComerciosLateralPopulares } from '../../shared/components/ComercioLateralCard'
 
 const PopularesPage: React.FC = () => {
   return (
     <>
-        <ListaComerciosLateralDemo  />
+        <ListaComerciosLateralPopulares  />
     </>
   )
 }
