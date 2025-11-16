@@ -54,17 +54,26 @@ const ComercioPage: React.FC = () => {
   return (
     <div className="mb-32">
 
-    <div className="px-4 py-6 h-52 flex justify-center items-center flex-col bg-[#f4e3e3]">
+      <div className="px-4 py-6 relative h-52 flex justify-center items-center flex-col bg-[#f4e3e3]">
         <h1 className="text-7xl text-[#E76B51] font-bold">
           {comercio?.nombre_comercial || "Comercio"}
         </h1>
         <p className="text-[#E76B51] mb-6 mt-3">
           {comercio?.descripcion || "Descripción del comercio"}
         </p>
-    </div>
+
+        <div className="absolute right-[15%] -bottom-20">
+
+          <div className="avatar ">
+            <div className="w-60 rounded-full">
+              <img src="https://img.daisyui.com/images/profile/demo/yellingcat@192.webp" />
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="max-w-full mx-auto px-4 py-6">
-      
+
 
         {/* Chips de categorías (incluye "Todas" por defecto) */}
         <CategoriaProductos

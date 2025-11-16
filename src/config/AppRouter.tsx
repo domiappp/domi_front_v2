@@ -21,6 +21,8 @@ const Productos = lazy(() => import("../pages/comercio/Productos"));
 const Horarios = lazy(() => import("../pages/comercio/ComercioHorariosPage"));
 
 const Servicios = lazy(() => import("../pages/admin/ServicioPage"));
+const Imagenes = lazy(() => import("../pages/comercio/Imagenes"));
+
 
 /** ---------- Tipos de config ---------- */
 type LayoutCmp = React.ComponentType; // Layout que internamente renderiza <Outlet />
@@ -110,6 +112,14 @@ const privateRoutes: PrivateRouteCfg[] = [
         element: <Productos />,
         layout: MainLayout,               // 👈 esta requiere MainLayout
         requireModule: "products",
+        requireRole: "comercio",     // 👈 rol requerido (o ["admin","super"])
+    },
+
+       {
+        path: "/imagenes",
+        element: <Imagenes />,
+        layout: MainLayout,               // 👈 esta requiere MainLayout
+        requireModule: "imagenes",
         requireRole: "comercio",     // 👈 rol requerido (o ["admin","super"])
     },
 

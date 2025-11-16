@@ -17,6 +17,7 @@ estado?: string
 logo_url?: string | null
 created_at?: string
 updated_at?: string
+views?: number
 // ...cualquier otro campo de tu entidad
 }
 

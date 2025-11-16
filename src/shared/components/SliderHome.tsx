@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import type { SwiperOptions } from "swiper/types";
 import { usePublicidad } from "../../services/usePublicidad";
 import ButtonLink from "./ButtonLink";
@@ -34,24 +34,35 @@ const SliderHome: React.FC = () => {
       .sort((a, b) => (a.orden ?? 9999) - (b.orden ?? 9999));
   }, [publicidad]);
 
+  // Estados de carga / error / vacío (mismas condiciones, mejor diseño)
   if (isLoading) {
     return (
-      <div className="relative w-full h-[28vh] lg:h-[45vh] rounded-2xl overflow-hidden lg:rounded-none animate-pulse bg-base-200" />
+      <div className="relative w-full h-[26vh] sm:h-[30vh] md:h-[34vh] lg:h-[48vh] rounded-2xl lg:rounded-none overflow-hidden bg-base-200/70 animate-pulse shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-r from-base-300/80 via-base-200/40 to-base-100/60" />
+      </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="relative w-full h-[28vh] lg:h-[45vh] rounded-2xl overflow-hidden lg:rounded-none flex items-center justify-center bg-base-200">
-        <p className="text-sm opacity-70">No se pudieron cargar los banners.</p>
+      <div className="relative w-full h-[26vh] sm:h-[30vh] md:h-[34vh] lg:h-[48vh] rounded-2xl lg:rounded-none overflow-hidden flex items-center justify-center bg-base-200/80 shadow-lg">
+        <div className="px-6 py-3 rounded-xl bg-base-100/90 border border-base-300/60 shadow-md backdrop-blur-md">
+          <p className="text-sm font-medium opacity-80">
+            No se pudieron cargar los banners.
+          </p>
+        </div>
       </div>
     );
   }
 
   if (!slides.length) {
     return (
-      <div className="relative w-full h-[28vh] lg:h-[45vh] rounded-2xl overflow-hidden lg:rounded-none flex items-center justify-center bg-base-200">
-        <p className="text-sm opacity-70">Sin publicidad disponible.</p>
+      <div className="relative w-full h-[26vh] sm:h-[30vh] md:h-[34vh] lg:h-[48vh] rounded-2xl lg:rounded-none overflow-hidden flex items-center justify-center bg-base-200/80 shadow-lg">
+        <div className="px-6 py-3 rounded-xl bg-base-100/90 border border-base-300/60 shadow-md backdrop-blur-md">
+          <p className="text-sm font-medium opacity-80">
+            Sin publicidad disponible.
+          </p>
+        </div>
       </div>
     );
   }
@@ -63,46 +74,32 @@ const SliderHome: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-[26vh] lg:h-[48vh] overflow-hidden lg:rounded-none">
-      {/* Badges arriba-derecha */}
-      <div className="absolute top-5 right-6 z-10 flex gap-3">
-        <div className="badge badge-warning">Pitalito - Huila</div>
-      </div>
-
-      {/* Avatares abajo-izquierda */}
-      <div className="absolute bottom-5 left-6 z-10 flex gap-3">
-        <div className="avatar">
-          <div className="ring-primary ring-offset-base-100 size-7 lg:size-10 rounded-full ring-2 ring-offset-2 overflow-hidden flex items-center justify-center">
-            <img src="facebook.png" alt="Facebook" className="w-full h-full object-contain" />
-          </div>
-        </div>
-        <div className="avatar">
-          <div className="ring-pink-500 ring-offset-base-100 size-7 lg:size-10 rounded-full ring-2 ring-offset-2 overflow-hidden flex items-center justify-center">
-            <img src="instagram.png" alt="Instagram" className="w-full h-full object-contain" />
-          </div>
-        </div>
-        <div className="avatar">
-          <div className="ring-green-500 ring-offset-base-100 size-7 lg:size-10 rounded-full ring-2 ring-offset-2 overflow-hidden flex items-center justify-center">
-            <img src="whatsapp.png" alt="WhatsApp" className="w-full h-full object-contain" />
-          </div>
+    <div className="relative group w-full h-[26vh] sm:h-[30vh] md:h-[34vh] lg:h-[48vh] overflow-hidden rounded-none bg-black shadow-xl">
+      {/* Badge superior derecha (tipo localización / info fija) */}
+      <div className="absolute top-4 right-4 lg:top-5 lg:right-6 z-30 flex gap-3">
+        <div className="badge badge-warning badge-lg gap-2 bg-warning/90 text-black/90 border border-white/30 shadow-lg backdrop-blur-md">
+          <MapPin className="w-3 h-3" />
+          <span className="text-xs sm:text-sm font-semibold tracking-wide">
+            Pitalito - Huila
+          </span>
         </div>
       </div>
 
-      {/* Botones personalizados (con selectores CSS) */}
+      {/* Botones personalizados (Swiper navigation) */}
       <button
         aria-label="Anterior"
-        className="btn-prev hidden group absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/40 backdrop-blur p-2
-                   hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/60 transition shadow-md"
+        className="btn-prev hidden lg:flex btn btn-circle items-center justify-center absolute left-4 top-1/2 z-30 -translate-y-1/2 bg-black/40 border border-white/20 backdrop-blur-md
+                   hover:bg-black/70 hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/70 transition-all duration-200 shadow-lg opacity-0 group-hover:opacity-100"
       >
-        <ChevronLeft className="size-5 text-white group-active:translate-x-[-2px] transition" />
+        <ChevronLeft className="w-5 h-5 text-white" />
       </button>
 
       <button
         aria-label="Siguiente"
-        className="btn-next hidden group absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full bg-black/40 backdrop-blur p-2
-                   hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-white/60 transition shadow-md"
+        className="btn-next hidden lg:flex btn btn-circle items-center justify-center absolute right-4 top-1/2 z-30 -translate-y-1/2 bg-black/40 border border-white/20 backdrop-blur-md
+                   hover:bg-black/70 hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-white/70 transition-all duration-200 shadow-lg opacity-0 group-hover:opacity-100"
       >
-        <ChevronRight className="size-5 text-white group-active:translate-x-[2px] transition" />
+        <ChevronRight className="w-5 h-5 text-white" />
       </button>
 
       <Swiper
@@ -121,37 +118,93 @@ const SliderHome: React.FC = () => {
           return (
             <SwiperSlide key={item.id} className="relative">
               <div className="relative w-full h-full">
-                {/* Imagen */}
+                {/* Imagen de fondo estilo ESPN (ocupa todo) */}
                 <img
                   src={src}
                   alt={`Publicidad ${item.id}`}
-                  className="w-full h-full object-cover select-none"
+                  className="absolute inset-0 w-full h-full object-cover select-none scale-105 md:scale-110 transition-transform duration-[3500ms] ease-out"
                   draggable={false}
                   loading="eager"
                 />
 
-                {/* Overlay oscuro (no bloquea el click del botón) */}
-                {/* <div className="pointer-events-none absolute inset-0 bg-black/10 lg:bg-black/10 z-10" /> */}
+                {/* Overlay tipo gradiente de izquierda a derecha */}
+                <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/55 to-black/5" />
 
-                {/* Botón absoluto (solo si hay ruta) */}
-                {item.ruta ? (
-                  <div
-                    className="absolute bottom-4 right-4 flex justify-center z-20"
-                    // evita que el click en el botón avance el slide accidentalmente
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <ButtonLink href={item.ruta} newTab>
-                      CLICK AQUÍ
-                    </ButtonLink>
+                {/* Contenido principal alineado a la izquierda */}
+                <div className="relative z-20 flex h-full items-center w-full px-5 sm:px-7 lg:px-14">
+                  <div className="max-w-4xl space-y-3 lg:space-y-5">
+                    {/* Badge estilo "EN DIRECTO" */}
+                    <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-orange-500 px-3.5 py-1.5 text-[11px] sm:text-xs lg:text-sm font-semibold uppercase tracking-[0.15em] shadow-md shadow-black/40">
+                      <span className="inline-block h-2 w-2 rounded-full bg-white animate-pulse" />
+                      <span className="text-white">Publicidad destacada</span>
+                    </div>
+
+                    {/* Título grande (genérico porque no hay título en la data) */}
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white leading-tight drop-shadow-[0_8px_25px_rgba(0,0,0,0.55)]">
+                      Descubre nuestras{" "}
+                      <span className="text-orange-400">
+                        promociones y anuncios especiales
+                      </span>
+                    </h2>
+
+                    {/* Descripción corta genérica */}
+                    <p className="hidden lg:block text-sm lg:text-base text-white/80 max-w-xl leading-relaxed">
+                      Contenido patrocinado con información relevante para la comunidad
+                      de Pitalito y alrededores. Haz clic para conocer más detalles.
+                    </p>
+
+                    {/* CTA (solo si hay ruta) */}
+                    {item.ruta && (
+                      <div
+                        className="pt-1 lg:pt-2 absolute right-6 lg:right-20 bottom-4 lg:bottom-6"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ButtonLink href={item.ruta} newTab>
+                          VER MÁS
+                        </ButtonLink>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Redes sociales inferiores centradas */}
+                <div className="absolute bottom-4 lg:bottom-5 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+                  <div className="avatar">
+                    <div className="ring-primary ring-offset-base-100 size-7 lg:size-10 rounded-full ring-2 ring-offset-2 overflow-hidden flex items-center justify-center bg-black/50 backdrop-blur-md border border-white/20 hover:scale-105 transition-transform">
+                      <img
+                        src="facebook.png"
+                        alt="Facebook"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                   </div>
 
+                  <div className="avatar">
+                    <div className="ring-pink-500 ring-offset-base-100 size-7 lg:size-10 rounded-full ring-2 ring-offset-2 overflow-hidden flex items-center justify-center bg-black/50 backdrop-blur-md border border-white/20 hover:scale-105 transition-transform">
+                      <img
+                        src="instagram.png"
+                        alt="Instagram"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  </div>
 
-                ) : null}
+                  <div className="avatar">
+                    <div className="ring-green-500 ring-offset-base-100 size-7 lg:size-10 rounded-full ring-2 ring-offset-2 overflow-hidden flex items-center justify-center bg-black/50 backdrop-blur-md border border-white/20 hover:scale-105 transition-transform">
+                      <img
+                        src="whatsapp.png"
+                        alt="WhatsApp"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* La imagen sigue viéndose mucho más hacia la derecha gracias al gradiente */}
               </div>
             </SwiperSlide>
           );
         })}
-
       </Swiper>
     </div>
   );

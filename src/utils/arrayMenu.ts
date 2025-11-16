@@ -96,4 +96,14 @@ export const MENU_ESTATICO: MenuItem[] = [
     requireModule: "services",
     requireRole: "administrador", // ejemplo de restricción por rol
   },
+
+
+     {
+    nombre: "Imagenes",
+    ruta: "/imagenes",
+    icono: "Picture",
+    orden: 100,
+    requireModule: "imagenes",
+    requireRole: "comercio", // ejemplo de restricción por rol
+  },
 ];

@@ -5,16 +5,14 @@ import type { CardComercioProps } from './CardComercio';
 import { useServicesUI } from '../../store/services.store';
 import { flattenPages, useComerciosPorServicioInfinite } from '../../services/useComerciosPorServicio';
 
-// Formularios
 import FormCompras from '../../features/OtherServices/FormCompras';
 import FormRecogida from '../../features/OtherServices/FormRecogida';
 import FormPagos from '../../features/OtherServices/FormPagos';
 import FormEnvios from '../../features/OtherServices/FormEnvios';
-import { div } from 'framer-motion/client';
 
-
-const mapToCard = (c: any): CardComercioProps => ({
+const mapToCard = (c: any, serviceId?: number | string): CardComercioProps => ({
   id: String(c.id),
+  serviceId,                                   // 👈 MUY IMPORTANTE
   nombre: c.nombre_comercial,
   categoria: c?.servicio?.nombre ?? '',
   imagen: c.logo_url || 'https://placehold.co/600x400?text=Comercio',
@@ -25,7 +23,6 @@ const mapToCard = (c: any): CardComercioProps => ({
 });
 
 const ComerciosPorServicioGrid: React.FC = () => {
-  // 🔒 SIEMPRE los mismos hooks y en el mismo orden
   const uiView = useServicesUI((s) => s.uiView);
   const formType = useServicesUI((s) => s.formType);
   const serviceId = useServicesUI((s) => s.selectedServiceId);
@@ -33,23 +30,23 @@ const ComerciosPorServicioGrid: React.FC = () => {
   const saveScroll = useServicesUI((s) => s.saveScrollForService);
   const getScroll = useServicesUI((s) => s.getScrollForService);
 
-  // Solo habilitamos la query cuando estamos en vista API y hay serviceId
   const enabled = Number.isFinite(serviceId as number) && uiView === 'api';
 
-  // ✅ Hook SIEMPRE llamado. Internamente no hará nada si enabled=false
   const query = useComerciosPorServicioInfinite(
     { serviceId: serviceId ?? 0, q, limit: 20 },
     { enabled }
   );
 
   const items = useMemo(
-    () => (enabled && query.data ? flattenPages(query.data as any).map(mapToCard) : []),
-    [enabled, query.data]
+    () =>
+      enabled && query.data
+        ? flattenPages(query.data as any).map((c: any) => mapToCard(c, Number(serviceId)))
+        : [],
+    [enabled, query.data, serviceId],
   );
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  // Efectos SIEMPRE declarados, con guards internos
   useEffect(() => {
     if (!enabled || !serviceId) return;
     const y = getScroll(serviceId);
@@ -81,17 +78,11 @@ const ComerciosPorServicioGrid: React.FC = () => {
     return () => io.disconnect();
   }, [enabled, query.hasNextPage, query.isFetchingNextPage, query.fetchNextPage]);
 
-  // 🟠 A partir de aquí, recién hacemos returns condicionales
-
-  // 1) Vista formularios
   if (uiView === 'form') {
     return (
       <section className="w-full h-auto flex items-center justify-center">
         <div className="mx-auto w-full max-w-6xl  xl:py-5">
-          {/* Grid responsive */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center justify-center">
-
-            {/* IMAGEN */}
             <div className="hidden xl:flex justify-center items-center order-1 md:order-1">
               <img
                 src="/moto.png"
@@ -100,7 +91,6 @@ const ComerciosPorServicioGrid: React.FC = () => {
               />
             </div>
 
-            {/* FORMULARIO */}
             <div className="flex justify-center items-center order-2 md:order-2">
               <div className=" xl:p-6 w-full max-w-md">
                 {formType === "pedido" && <FormCompras />}
@@ -109,16 +99,12 @@ const ComerciosPorServicioGrid: React.FC = () => {
                 {formType === "envio" && <FormEnvios />}
               </div>
             </div>
-
           </div>
         </div>
       </section>
-
     );
   }
 
-
-  // 2) Vista API (exploración)
   if (!serviceId) {
     return (
       <div className="mx-auto w-full max-w-8xl p-3 sm:p-4">
@@ -150,7 +136,6 @@ const ComerciosPorServicioGrid: React.FC = () => {
           <CardComercio
             key={c.id}
             {...c}
-            onToggleFavorito={(id) => console.log('toggle fav', id)}
           />
         ))}
       </div>

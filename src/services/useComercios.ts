@@ -134,3 +134,24 @@ export function toFormData<T extends Record<string, any>>(obj: T, logo?: File | 
   if (logo) fd.append('logo', logo) // el backend espera el campo 'logo'
   return fd
 }
+
+
+
+// =========================
+// CLICK / VIEW (+1 view)
+// =========================
+
+export function useComercioClickView() {
+  return useMutation<void, Error, string>({
+    mutationKey: ['comercios', 'click-view'],
+    mutationFn: async (id: string) => {
+      await api.post(
+        `/comercio/click/${id}/view`,
+        {}, // body vacío válido
+        {
+          withCredentials: true,
+        }
+      );
+    },
+  });
+}

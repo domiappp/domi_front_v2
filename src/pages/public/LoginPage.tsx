@@ -53,7 +53,12 @@ const LoginPage: React.FC = () => {
         }, 500);
 
         hide();
-        navigate("/dashboard");
+
+        if (data.rol === 'administrador') {
+          navigate("/dashboard");
+        } else {
+          navigate("/productos");
+        }
 
       },
       onError: (err) => {
