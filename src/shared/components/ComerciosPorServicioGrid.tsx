@@ -82,7 +82,7 @@ const ComerciosPorServicioGrid: React.FC = () => {
     return (
       <section className="w-full h-auto flex items-center justify-center">
         <div className="mx-auto w-full max-w-6xl  xl:py-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center justify-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center justify-center">
             <div className="hidden xl:flex justify-center items-center order-1 md:order-1">
               <img
                 src="/moto.png"
@@ -91,7 +91,7 @@ const ComerciosPorServicioGrid: React.FC = () => {
               />
             </div>
 
-            <div className="flex justify-center items-center order-2 md:order-2">
+            <div className="flex justify-center items-center order-2 md:order-2 bg-white rounded-2xl">
               <div className=" xl:p-6 w-full max-w-md">
                 {formType === "pedido" && <FormCompras />}
                 {formType === "recogida" && <FormRecogida />}

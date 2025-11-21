@@ -190,11 +190,11 @@ const CategoriesSlider: React.FC = () => {
             >
               <div
                 className={[
-                  "relative size-12 lg:size-16 rounded-full flex items-center justify-center shadow-sm transition-all duration-200 ring-2",
+                  "relative size-14 lg:size-20 rounded-full flex items-center justify-center shadow-sm transition-all duration-200 ring-2",
                   "bg-gradient-to-br",
                   isSelected
-                    ? "from-[#FFE1CC] via-[#FFEBDD] to-[#FFD2B3] ring-[#FF6600] shadow-md scale-105"
-                    : "from-[#F5F5F5] via-[#F3F3F3] to-[#ECECEC] ring-transparent hover:ring-[#FF6600]/80 hover:shadow-md hover:scale-105",
+                    ? "from-[#FFE1CC] via-[#FFE1CC] to-[#FFD2B3] ring-[#FF6600] shadow-md scale-105"
+                    : "from-[#FFE1CC] via-[#FFE1CC] to-[#FFD2B3] ring-transparent hover:ring-[#FF6600]/80 hover:shadow-md hover:scale-105",
                 ].join(" ")}
                 aria-pressed={isSelected}
                 aria-label={cat.nombre}
@@ -202,7 +202,7 @@ const CategoriesSlider: React.FC = () => {
                 <img
                   src={isStatic ? cat.foto : `${API_URL}${cat.foto}`}
                   alt={cat.nombre}
-                  className="size-8 lg:size-10 object-contain drop-shadow-sm"
+                  className="size-10 lg:size-14 object-contain drop-shadow-sm"
                 />
               </div>
               <p
