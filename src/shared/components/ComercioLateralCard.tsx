@@ -246,7 +246,7 @@ export const ListaComerciosLateralPopulares: React.FC = () => {
   return (
     <div className="mx-auto w-full max-w-9xl p-3 sm:p-4">
       <h2 className="mb-3 text-base sm:text-lg font-semibold">Recomendados</h2>
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((c) => {
           const cardProps = mapCommerceToCardProps(c);
           return (

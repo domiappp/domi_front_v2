@@ -105,9 +105,9 @@ const LoginPage: React.FC = () => {
             <DeliveryIllustration className="w-full max-w-[520px] drop-shadow-2xl" />
 
             <div className="mt-6 flex flex-wrap gap-3 text-sm">
-              <div className="badge badge-lg border-white/30 bg-white/10 text-white">Seguimiento en tiempo real</div>
-              <div className="badge badge-lg border-white/30 bg-white/10 text-white">Pagos seguros</div>
-              <div className="badge badge-lg border-white/30 bg-white/10 text-white">+2k repartidores</div>
+              {/* <div className="badge badge-lg border-white/30 bg-white/10 text-white">Seguimiento en tiempo real</div> */}
+              <div className="badge badge-lg border-white/30 bg-white/10 text-white">Tu mejor opcion</div>
+              <div className="badge badge-lg border-white/30 bg-white/10 text-white">Disponibilidad</div>
             </div>
           </div>
         </aside>

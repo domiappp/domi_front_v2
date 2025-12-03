@@ -137,7 +137,7 @@ const CardComercio: React.FC<CardComercioProps> = ({
       onClick={goDetail}
       onKeyDown={onKeyGoDetail}
       aria-label={`Ver ${nombre}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white/95 pb-3 shadow-sm ring-1 ring-slate-100 transition-all duration-200 supports-[hover:hover]:hover:-translate-y-1 supports-[hover:hover]:hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6600]"
+      className="group relative flex flex-col shadow-2xl overflow-hidden rounded-2xl bg-white/95 pb-3  ring-1 ring-slate-100 transition-all duration-200 supports-[hover:hover]:hover:-translate-y-1 supports-[hover:hover]:hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6600]"
     >
       {/* Botón favorito (no navega) */}
       <button

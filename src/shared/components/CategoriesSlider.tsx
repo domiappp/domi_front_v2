@@ -8,9 +8,6 @@ import { useServicesUI } from "../../store/services.store";
 import { usePrefetchComerciosPorServicio } from "../../services/useComerciosPorServicio";
 import { useServiceSelectionStore } from "../../store/serviceSelection.store";
 
-// import "swiper/css";
-// import "swiper/css/pagination";
-
 type Categoria = {
   id?: number | string;
   nombre?: string;
@@ -26,6 +23,9 @@ type ServicioMin = {
 type StaticKey = "pedido" | "recogida" | "pago" | "envio";
 const STATIC_PREFIX = "static:" as const;
 
+// color principal de marca
+const BRAND_ORANGE = "#FF6B00";
+
 const CategoriesSlider: React.FC = () => {
   const { data: categorias, isError, isLoading } = useServicios();
 
@@ -38,7 +38,6 @@ const CategoriesSlider: React.FC = () => {
 
   const prefetch = usePrefetchComerciosPorServicio();
 
-  // ✅ STORE PERSISTIDO EN LOCALSTORAGE
   const storedServiceId = useServiceSelectionStore(
     (s) => s.selectedServiceId
   );
@@ -46,7 +45,6 @@ const CategoriesSlider: React.FC = () => {
     (s) => s.setSelection
   );
 
-  // Estáticos (2 arriba, 2 abajo)
   const staticTop: Categoria[] = [
     {
       id: `${STATIC_PREFIX}recogida`,
@@ -76,30 +74,26 @@ const CategoriesSlider: React.FC = () => {
     const arr = Array.isArray(categorias) ? (categorias as ServicioMin[]) : [];
     return arr.map((s) => ({
       id: s.id,
-      nombre: s.nombre ?? "", // evita undefined
-      foto: s.foto ?? undefined, // convierte null -> undefined
+      nombre: s.nombre ?? "",
+      foto: s.foto ?? undefined,
     }));
   }, [categorias]);
 
-  // 🧠 EFECTO: al cargar categorías, aplica selección guardada o “Restaurantes”
   useEffect(() => {
     if (!apiItems.length) return;
-    // Si el usuario está en vista de formulario, no forzamos nada
     if (uiView === "form") return;
 
-    // 1) Intentar con lo guardado en localStorage
     if (storedServiceId != null) {
       const idNum = Number(storedServiceId);
       if (Number.isFinite(idNum)) {
         const match = apiItems.find((c) => Number(c.id) === idNum);
         if (match) {
           setSelectedService(idNum, match.nombre ?? null);
-          return; // ✅ ya aplicamos selección almacenada
+          return;
         }
       }
     }
 
-    // 2) Si no hay nada válido guardado → buscar “Restaurantes”
     const defaultItem = apiItems.find(
       (c) => c.nombre?.trim().toLowerCase() === "restaurantes"
     );
@@ -107,12 +101,11 @@ const CategoriesSlider: React.FC = () => {
       const idNum = Number(defaultItem.id);
       if (Number.isFinite(idNum)) {
         setSelectedService(idNum, defaultItem.nombre ?? null);
-        setStoredSelection(idNum, defaultItem.nombre ?? null); // guardamos default
+        setStoredSelection(idNum, defaultItem.nombre ?? null);
       }
     }
   }, [apiItems, storedServiceId, uiView, setSelectedService, setStoredSelection]);
 
-  // Partimos API en dos y metemos estáticos al inicio de cada fila
   const { firstRow, secondRow } = useMemo(() => {
     const mid = Math.ceil(apiItems.length / 2);
     const r1 = [...staticTop, ...apiItems.slice(0, mid)];
@@ -124,19 +117,17 @@ const CategoriesSlider: React.FC = () => {
 
   const onClickCategory = useCallback(
     (cat: Categoria) => {
-      // Si es estático → abrir formulario y marcar selección de formulario
       if (typeof cat.id === "string" && cat.id.startsWith(STATIC_PREFIX)) {
         const type = cat.id.split(":")[1] as StaticKey;
         showForm(type);
         return;
       }
-      // Si es API → seleccionar servicio (esto setea uiView='api' y limpia formType)
+
       const idNum = Number(cat.id);
       if (!Number.isFinite(idNum)) return;
       const name = cat.nombre ?? null;
 
       setSelectedService(idNum, name);
-      // ✅ guardar en estado global + localStorage
       setStoredSelection(idNum, name);
     },
     [setSelectedService, showForm, setStoredSelection]
@@ -144,7 +135,6 @@ const CategoriesSlider: React.FC = () => {
 
   const onHoverPrefetch = useCallback(
     (cat: Categoria) => {
-      // No prefetch para estáticos
       if (typeof cat.id === "string" && cat.id.startsWith(STATIC_PREFIX)) return;
       const idNum = Number(cat.id);
       if (!Number.isFinite(idNum)) return;
@@ -166,7 +156,6 @@ const CategoriesSlider: React.FC = () => {
         const isStatic = typeof cat.id === "string" && cat.id.startsWith(STATIC_PREFIX);
         const idNum = Number(cat.id);
 
-        // 🔸 ¿Está seleccionado?
         const staticType: StaticKey | null = isStatic
           ? ((cat.id as string).split(":")[1] as StaticKey)
           : null;
@@ -178,7 +167,7 @@ const CategoriesSlider: React.FC = () => {
         return (
           <SwiperSlide
             key={key}
-            className="!w-20 flex flex-col items-center justify-center gap-1.5 py-2 mx-auto"
+            className="!w-20 flex flex-col items-center justify-center ml-12 py-2 mx-auto"
           >
             <button
               type="button"
@@ -190,11 +179,10 @@ const CategoriesSlider: React.FC = () => {
             >
               <div
                 className={[
-                  "relative size-14 lg:size-20 rounded-full flex items-center justify-center shadow-sm transition-all duration-200 ring-2",
-                  "bg-gradient-to-br",
+                  "relative w-20 h-24 lg:w-24 lg:h-28 rounded-xl flex flex-col items-center justify-center shadow-2xl transition-all duration-200  p-2 bg-white",
                   isSelected
-                    ? "from-[#FFE1CC] via-[#FFE1CC] to-[#FFD2B3] ring-[#FF6600] shadow-md scale-105"
-                    : "from-[#FFE1CC] via-[#FFE1CC] to-[#FFD2B3] ring-transparent hover:ring-[#FF6600]/80 hover:shadow-md hover:scale-105",
+                    ? "bg-gradient-to-b from-[#FF6B00] to-[#FF8A33] shadow-2xl scale-105"
+                    : "ring-transparent shadow-2xl  hover:shadow hover:scale-105",
                 ].join(" ")}
                 aria-pressed={isSelected}
                 aria-label={cat.nombre}
@@ -202,18 +190,20 @@ const CategoriesSlider: React.FC = () => {
                 <img
                   src={isStatic ? cat.foto : `${API_URL}${cat.foto}`}
                   alt={cat.nombre}
-                  className="size-10 lg:size-14 object-contain drop-shadow-sm"
+                  className="size-10 lg:size-14 object-contain drop-shadow-sm mb-1"
                 />
+
+                <p
+                  className={[
+                    "text-[10px] md:text-xs font-semibold text-center break-all leading-snug line-clamp-2 break-words",
+                    isSelected ? "text-white" : "text-[#FF6B00]",
+                  ].join(" ")}
+                >
+                  {cat.nombre}
+                </p>
               </div>
-              <p
-                className={[
-                  "text-[11px] md:text-xs font-semibold mt-1 text-center leading-snug line-clamp-2 break-words max-w-[4.5rem]",
-                  isSelected ? "text-[#FF6600]" : "text-slate-700",
-                ].join(" ")}
-              >
-                {cat.nombre}
-              </p>
             </button>
+
           </SwiperSlide>
         );
       })}
@@ -223,7 +213,7 @@ const CategoriesSlider: React.FC = () => {
   if (isLoading) {
     return (
       <div className="w-full px-4 pt-3 pb-4">
-        <div className="w-full max-w-5xl mx-auto animate-pulse">
+        <div className="w-full max-w-full mx-auto animate-pulse">
           <div className="flex justify-between mb-4 items-center">
             <div className="h-5 w-40 bg-slate-100 rounded-full" />
             <div className="lg:hidden h-6 w-6 bg-slate-100 rounded-full" />
@@ -232,7 +222,7 @@ const CategoriesSlider: React.FC = () => {
             {[0, 1].map((row) => (
               <div key={row} className="flex gap-4">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="flex flex-col items-center gap-2">
+                  <div key={i} className="flex flex-col  items-center gap-2">
                     <div className="size-14 rounded-full bg-slate-100" />
                     <div className="h-3 w-14 bg-slate-100 rounded-full" />
                   </div>
@@ -275,12 +265,12 @@ const CategoriesSlider: React.FC = () => {
           transition: all 0.2s ease;
         }
         .categories-swiper .swiper-pagination-bullet-active {
-          background: #FF6600;
+          background: ${BRAND_ORANGE};
           transform: scale(1.1);
         }
       `}</style>
 
-      <div className="w-full max-w-5xl mx-auto">
+      <div className="w-full max-w-full mx-auto">
         <div className="flex items-center justify-between mb-1">
           <div className="flex flex-col gap-0.5">
             <h2 className="text-base md:text-lg font-semibold xl:font-bold text-slate-900">
@@ -290,9 +280,9 @@ const CategoriesSlider: React.FC = () => {
               Elige qué necesitas hoy: compras, envíos, pagos o recogidas.
             </p>
           </div>
-          <span className="lg:hidden inline-flex items-center gap-1 text-xs font-medium text-[#FF6600]">
+          <span className="lg:hidden inline-flex items-center gap-1 text-xs font-medium text-[#FF6B00] rounded-full px-3 py-1 bg-[#FF6B00]/10 border border-[#FF6B00]/30">
             Ver servicios
-            <ArrowRight size={16} color="#FF6600" />
+            <ArrowRight size={16} color={BRAND_ORANGE} />
           </span>
         </div>
 

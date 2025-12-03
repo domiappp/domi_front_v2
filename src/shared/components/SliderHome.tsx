@@ -74,16 +74,16 @@ const SliderHome: React.FC = () => {
   };
 
   return (
-    <div className="relative group w-full h-[26vh] sm:h-[30vh] md:h-[34vh] lg:h-[48vh] overflow-hidden rounded-none bg-black shadow-xl">
+    <div className="relative w-full xl:w-[85%] rounded-3xl mx-auto group mt-9  h-[26vh] sm:h-[30vh] md:h-[34vh] lg:h-[48vh] overflow-hidden  bg-black shadow-xl">
       {/* Badge superior derecha (tipo localización / info fija) */}
-      <div className="absolute top-4 right-4 lg:top-5 lg:right-6 z-30 flex gap-3">
+      {/* <div className="absolute top-4 right-4 lg:top-5 lg:right-6 z-30 flex gap-3">
         <div className="badge badge-warning badge-lg gap-2 bg-warning/90 text-black/90 border border-white/30 shadow-lg backdrop-blur-md">
           <MapPin className="w-3 h-3" />
           <span className="text-xs sm:text-sm font-semibold tracking-wide">
             Pitalito - Huila
           </span>
         </div>
-      </div>
+      </div> */}
 
       {/* Botones personalizados (Swiper navigation) */}
       <button

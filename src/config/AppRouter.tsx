@@ -196,6 +196,7 @@ const AppRouter: React.FC = () => {
 
                 {/* Not Found */}
                 <Route path="*" element={<Navigate to="/" replace />} />
+                
             </Routes>
         </Suspense>
     );

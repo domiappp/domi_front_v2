@@ -1,5 +1,5 @@
 // src/pages/comercio/ComercioPage.tsx
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 
 import CategoriaProductos from "../../shared/components/CategoriaProductos"
@@ -8,6 +8,8 @@ import GaleriaImagenes from "../../shared/components/GaleriaImagenes"
 
 import { useCategoriaByComercio } from "../../services/useCategorias"
 import { useProductsByComercioCategoria } from "../../services/useProducts"
+import { useCartStore } from "../../store/cart.store"   // 👈 importar
+import { ShoppingCart } from "lucide-react"
 
 interface ProductoAdaptado {
   id: string
@@ -17,6 +19,34 @@ interface ProductoAdaptado {
   imagen: string
 }
 
+const productosImg = [
+  {
+    id: "1",
+    nombre: "Imagen 1",
+    imagen:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0TXbb0QH6YAytgZTGJbPdqH06UNZShNGQ0A&s"
+  },
+  {
+    id: "2",
+    nombre: "Imagen 2",
+    imagen:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0OJmpccbG0Eq7zWnULcZVSdILsqZBTqEDFg&s"
+  },
+  {
+    id: "3",
+    nombre: "Imagen 3",
+    imagen:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcFPOgWraYIg-tD9CVg7GUBqzI7tw75hKr-g&s"
+  },
+  {
+    id: "4",
+    nombre: "Banner Restaurante",
+    imagen:
+      "https://img.freepik.com/vector-gratis/conjunto-banners-restaurante-foto_23-2147859055.jpg?semt=ais_hybrid&w=740&q=80"
+  }
+]
+
+
 const ComercioPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const comercioId = Number(id)
@@ -24,6 +54,24 @@ const ComercioPage: React.FC = () => {
   const [categoriaActiva, setCategoriaActiva] = useState<"Todas" | number>("Todas")
   const [query, setQuery] = useState("")
   const [viewMode, setViewMode] = useState<"productos" | "galeria">("productos")
+
+  // 🛒 Zustand carrito
+  const setActiveComercio = useCartStore((s) => s.setActiveComercio)
+  const addItem = useCartStore((s) => s.addItem)
+  const openCart = useCartStore((s) => s.open)
+
+  const toggleCart = useCartStore((s) => s.toggle)
+
+const activeComercioId = useCartStore((s) => s.activeComercioId);
+const getUniqueCount = useCartStore((s) => s.getUniqueCount);
+const uniqueCount = getUniqueCount(activeComercioId);
+
+  // 🔹 marcar comercio activo en el store cuando cambie
+  useEffect(() => {
+    if (!Number.isNaN(comercioId)) {
+      setActiveComercio(comercioId)
+    }
+  }, [comercioId, setActiveComercio])
 
   // 🔹 Categorías del comercio
   const {
@@ -62,13 +110,28 @@ const ComercioPage: React.FC = () => {
     descripcion: p.descripcion,
     precio: p.precio,
     imagen:
-      p.imagen_url ||
+   
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqIvY_EddgWVLKNZD3S-xTjijRkfogKFxFkA&s",
   }))
 
+  // handler para agregar al carrito
+  const handleAddToCart = (productId: string) => {
+    const product = productos.find((p) => p.id === productId)
+    if (!product) return
+
+    addItem(comercioId, {
+      id: product.id,
+      nombre: product.nombre,
+      precio: product.precio,
+      imagen: product.imagen,
+    })
+
+    // opcional: abrir el sidebar al agregar
+    // openCart()
+  }
+
   return (
     <div className="mb-32">
-
       {/* HEADER */}
       <div className="px-4 py-8 md:py-10 relative min-h-[180px] md:min-h-[220px] flex justify-center items-center flex-col bg-[#f4e3e3]">
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-[#E76B51] font-bold text-center break-words">
@@ -89,19 +152,17 @@ const ComercioPage: React.FC = () => {
       </div>
 
       {/* CONTENIDO */}
-      <div className="max-w-6xl mx-auto px-4 py-6">
-
+      <div className="container mx-auto px-4 py-6">
         {/* SWITCH PRODUCTOS / GALERÍA */}
         <div className="flex justify-center mb-6">
           <div className="inline-flex rounded-full bg-white/80 shadow-md border border-gray-200 p-1">
             <button
               type="button"
               onClick={() => setViewMode("productos")}
-              className={`px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base rounded-full transition-all ${
-                viewMode === "productos"
+              className={`px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base rounded-full transition-all ${viewMode === "productos"
                   ? "bg-[#E76B51] text-white shadow"
                   : "text-gray-600 hover:bg-gray-100"
-              }`}
+                }`}
             >
               Productos
             </button>
@@ -109,11 +170,10 @@ const ComercioPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setViewMode("galeria")}
-              className={`px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base rounded-full transition-all ${
-                viewMode === "galeria"
+              className={`px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base rounded-full transition-all ${viewMode === "galeria"
                   ? "bg-[#E76B51] text-white shadow"
                   : "text-gray-600 hover:bg-gray-100"
-              }`}
+                }`}
             >
               Galería
             </button>
@@ -140,9 +200,7 @@ const ComercioPage: React.FC = () => {
                   productos={productos}
                   query={query}
                   onSearch={setQuery}
-                  onAdd={(productId) =>
-                    console.log("Agregar producto al carrito:", productId)
-                  }
+                  onAdd={handleAddToCart}  // 👈 AQUÍ
                 />
               </div>
             )}
@@ -150,7 +208,22 @@ const ComercioPage: React.FC = () => {
         )}
 
         {/* Vista GALERÍA */}
-        {viewMode === "galeria" && <GaleriaImagenes productos={productos} />}
+        {viewMode === "galeria" && <GaleriaImagenes productos={productosImg} />}
+
+      <button
+          type="button"
+          onClick={toggleCart}
+          className="fixed bottom-20 right-6 z-30 bg-[#E76B51] text-white rounded-full shadow-lg px-4 py-3 flex items-center gap-2 "
+        >
+          <ShoppingCart className="w-5 h-5" />
+          <span>Ver carrito</span>
+
+          {uniqueCount > 0 && (
+            <span className="absolute -top-2 -right-2 inline-flex items-center justify-center min-w-[22px] h-[22px] text-xs font-bold rounded-full bg-white text-[#E76B51] shadow-md">
+              {uniqueCount}
+            </span>
+          )}
+        </button>
       </div>
     </div>
   )
