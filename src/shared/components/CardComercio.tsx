@@ -88,7 +88,7 @@ const EstadoPill: React.FC<{ abierto?: boolean }> = ({ abierto }) => {
   );
 };
 
-const Base = "https://5kqc6qdp-3000.use2.devtunnels.ms";
+const Base = import.meta.env.VITE_API_URL;
 
 const CardComercio: React.FC<CardComercioProps> = ({
   id,

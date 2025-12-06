@@ -19,7 +19,7 @@ interface PublicidadItem {
 const SliderHome: React.FC = () => {
   const { data: publicidad, isLoading, isError } = usePublicidad();
 
-  const API_BASE_URL = "https://5kqc6qdp-3000.use2.devtunnels.ms";
+  const API_BASE_URL =  import.meta.env.VITE_API_URL;
 
   const getImageUrl = (path?: string | null) => {
     if (!path) return "";
