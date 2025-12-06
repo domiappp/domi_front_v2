@@ -19,7 +19,7 @@ interface PublicidadItem {
 const SliderHome: React.FC = () => {
   const { data: publicidad, isLoading, isError } = usePublicidad();
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL ?? "";
+  const API_BASE_URL = "https://5kqc6qdp-3000.use2.devtunnels.ms";
 
   const getImageUrl = (path?: string | null) => {
     if (!path) return "";
@@ -74,7 +74,7 @@ const SliderHome: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full xl:w-[85%] rounded-3xl mx-auto group mt-9  h-[26vh] sm:h-[30vh] md:h-[34vh] lg:h-[48vh] overflow-hidden  bg-black shadow-xl">
+    <div className="relative w-full lg:w-[90%] lg:rounded-3xl mx-auto group lg:mt-9  h-[26vh] sm:h-[30vh] md:h-[34vh] lg:h-[48vh] overflow-hidden  bg-black shadow-xl">
       {/* Badge superior derecha (tipo localización / info fija) */}
       {/* <div className="absolute top-4 right-4 lg:top-5 lg:right-6 z-30 flex gap-3">
         <div className="badge badge-warning badge-lg gap-2 bg-warning/90 text-black/90 border border-white/30 shadow-lg backdrop-blur-md">
@@ -168,7 +168,7 @@ const SliderHome: React.FC = () => {
                 </div>
 
                 {/* Redes sociales inferiores centradas */}
-                <div className="absolute bottom-4 lg:bottom-5 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+                {/* <div className="absolute bottom-4 lg:bottom-2.5 left-14 z-30 flex gap-3">
                   <div className="avatar">
                     <div className="ring-primary ring-offset-base-100 size-7 lg:size-10 rounded-full ring-2 ring-offset-2 overflow-hidden flex items-center justify-center bg-black/50 backdrop-blur-md border border-white/20 hover:scale-105 transition-transform">
                       <img
@@ -198,7 +198,7 @@ const SliderHome: React.FC = () => {
                       />
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* La imagen sigue viéndose mucho más hacia la derecha gracias al gradiente */}
               </div>

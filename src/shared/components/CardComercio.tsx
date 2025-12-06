@@ -88,7 +88,7 @@ const EstadoPill: React.FC<{ abierto?: boolean }> = ({ abierto }) => {
   );
 };
 
-const Base = import.meta.env.VITE_API_URL;
+const Base = "https://5kqc6qdp-3000.use2.devtunnels.ms";
 
 const CardComercio: React.FC<CardComercioProps> = ({
   id,
@@ -137,7 +137,7 @@ const CardComercio: React.FC<CardComercioProps> = ({
       onClick={goDetail}
       onKeyDown={onKeyGoDetail}
       aria-label={`Ver ${nombre}`}
-      className="group relative flex flex-col shadow-2xl overflow-hidden rounded-2xl bg-white/95 pb-3  ring-1 ring-slate-100 transition-all duration-200 supports-[hover:hover]:hover:-translate-y-1 supports-[hover:hover]:hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6600]"
+      className="group relative cursor-pointer flex flex-col shadow-2xl overflow-hidden rounded-2xl bg-white/95 pb-3  ring-1 ring-slate-100 transition-all duration-200 supports-[hover:hover]:hover:-translate-y-1 supports-[hover:hover]:hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6600]"
     >
       {/* Botón favorito (no navega) */}
       <button
@@ -170,13 +170,11 @@ const CardComercio: React.FC<CardComercioProps> = ({
       </div>
 
       {/* Info principal */}
-      <div className="min-w-0 px-3 sm:px-4 pt-2 space-y-1.5">
+      <div className="min-w-0 px-3 sm:px-4 pt-2">
         <h3 className="text-[15px] sm:text-base font-semibold text-slate-900 line-clamp-2">
           {nombre}
         </h3>
-        <p className="inline-flex max-w-full items-center rounded-full bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-600">
-          <span className="truncate">{categoria}</span>
-        </p>
+
 
         {/* Rating (solo si hay valor) */}
         {(rating ?? 0) > 0 && (

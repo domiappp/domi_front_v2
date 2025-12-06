@@ -31,7 +31,7 @@ const ServicesHighlightMarquee: React.FC = () => {
 
   return (
     <div
-      className="w-full h-16 flex items-center border-y services-marquee overflow-hidden"
+      className="w-full py-2 h-auto lg:h-16 flex items-center border-y services-marquee overflow-hidden"
       style={{
         background: `linear-gradient(135deg, ${BRAND_ORANGE} 0%, #FF8A33 45%, #FFB066 100%)`,
         borderColor: 'rgba(255,255,255,0.1)',
@@ -103,7 +103,7 @@ const HomePage: React.FC = () => {
       </div>
 
       <div className="w-full bg-white py-4">
-        <div className="container mx-auto bg-white">
+        <div className="w-full lg:container mx-auto bg-white">
           <CategoriesSlider />
         </div>
       </div>

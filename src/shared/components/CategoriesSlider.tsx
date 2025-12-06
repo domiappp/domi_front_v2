@@ -167,7 +167,7 @@ const CategoriesSlider: React.FC = () => {
         return (
           <SwiperSlide
             key={key}
-            className="!w-20 flex flex-col items-center justify-center ml-12 py-2 mx-auto"
+            className="!w-20 flex flex-col items-center justify-center ml-3 lg:ml-12 lg:py-2 mx-auto"
           >
             <button
               type="button"
@@ -179,7 +179,7 @@ const CategoriesSlider: React.FC = () => {
             >
               <div
                 className={[
-                  "relative w-20 h-24 lg:w-24 lg:h-28 rounded-xl flex flex-col items-center justify-center shadow-2xl transition-all duration-200  p-2 bg-white",
+                  "relative w-20 h-auto lg:w-24 lg:h-28 rounded-xl flex flex-col items-center justify-center shadow-2xl transition-all duration-200  p-2 bg-white",
                   isSelected
                     ? "bg-gradient-to-b from-[#FF6B00] to-[#FF8A33] shadow-2xl scale-105"
                     : "ring-transparent shadow-2xl  hover:shadow hover:scale-105",
@@ -246,7 +246,7 @@ const CategoriesSlider: React.FC = () => {
   }
 
   return (
-    <div className="w-full px-4 pt-3 pb-4 bg-gradient-to-b from-white via-white to-slate-50/80">
+    <div className="">
       <style>{`
         .categories-swiper {
           padding-top: 0.35rem;
@@ -271,7 +271,7 @@ const CategoriesSlider: React.FC = () => {
       `}</style>
 
       <div className="w-full max-w-full mx-auto">
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between mb-1 px-3">
           <div className="flex flex-col gap-0.5">
             <h2 className="text-base md:text-lg font-semibold xl:font-bold text-slate-900">
               Seleccionar servicio

@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
       }}
     >
       <nav
-        className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-3 md:py-4"
+        className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-1.5 lg:py-4"
         aria-label="Principal"
       >
         {/* Izquierda */}
