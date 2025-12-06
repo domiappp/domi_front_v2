@@ -1,27 +1,68 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 
 interface SearchBoxProps {
   onSearch: (searchTerm: string) => void;
   placeholder?: string;
+  initialValue?: string;
+  debounceMs?: number;
 }
 
 const SearchBox: React.FC<SearchBoxProps> = ({
   onSearch,
   placeholder = "Busca un comercio o servicio...",
+  initialValue = "",
+  debounceMs = 400,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(initialValue);
 
-  const handleSearch = useCallback(
+  const timeoutRef = useRef<number | null>(null);
+  const isFirstRender = useRef(true);
+
+  // 🔄 sincronizar cuando cambie initialValue (por ejemplo, al cambiar de servicio)
+  useEffect(() => {
+    setSearchTerm(initialValue);
+  }, [initialValue]);
+
+  // ⌛ Debounce: dispara onSearch cuando se deja de escribir
+  useEffect(() => {
+    // evitar disparar búsqueda en el primer render
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = window.setTimeout(() => {
+      onSearch(searchTerm.trim());
+    }, debounceMs);
+
+    return () => {
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [searchTerm, onSearch, debounceMs]);
+
+  const handleSearchSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
+
+      // si hay un debounce pendiente, lo cancelamos para no disparar dos veces
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
+
       onSearch(searchTerm.trim());
     },
     [onSearch, searchTerm]
   );
 
   return (
-    <form onSubmit={handleSearch} className="w-full max-w-md">
+    <form onSubmit={handleSearchSubmit} className="w-full max-w-md">
       <div className="relative w-full">
         {/* Icono dentro a la izquierda */}
         <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">

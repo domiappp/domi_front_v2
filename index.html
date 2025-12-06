@@ -1,14 +1,106 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
+
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Domicilios W</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoXnWNMmlDU1_f09QOXMzs5xRx5lT7IaEVEQ&s" />
+  <link rel="canonical" href="https://domiciliosw.com" />
+  <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoXnWNMmlDU1_f09QOXMzs5xRx5lT7IaEVEQ&s" type="image/x-icon">
+  <link rel="apple-touch-icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoXnWNMmlDU1_f09QOXMzs5xRx5lT7IaEVEQ&s">
+
+  <!-- Meta Etiquetas para SEO -->
+  <meta name="description"
+    content="Domicilios Pitalito, tu servicio de domicilios en Pitalito, Huila. Entrega rápida y eficiente a tu puerta. ¡Pide ya!" />
+  <meta name="keywords" content="domicilios, Pitalito, Huila, entregas, servicio a domicilio, comida, productos" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph meta para compartir en redes sociales -->
+  <meta property="og:title"
+    content="Domicilios Pitalito - Servicio rápido y confiable en Pitalito, Huila - Domiciliosw - Enviosw" />
+  <meta property="og:description"
+    content="Realiza tus pedidos y recibe entregas rápidas en Pitalito. ¡Disfruta de un servicio eficiente y cómodo!" />
+  <meta property="og:image" content="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoXnWNMmlDU1_f09QOXMzs5xRx5lT7IaEVEQ&s" />
+  <meta property="og:image:alt" content="Logo de Domicilios Pitalito" /> <!-- Agregado -->
+  <meta property="og:url" content="https://www.domiciliosw.com" />
+  <meta property="og:type" content="website" />
+  <meta property="og:updated_time" content="1747111444" /> <!-- Agregado -->
+  <meta name="google-site-verification" content="google539f264684d593af" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Domicilios en Pitalito | Tu aliado en entregas rápidas | enviosw">
+  <meta name="twitter:description"
+    content="Tu aliado en domicilios ... Pide comida, haz tus compras, envía productos o gestiona trámites. Nosotros te lo entregamos en tu puerta, fácil y rápido. ¡Pedir ahora!">
+  <meta name="twitter:image" content="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoXnWNMmlDU1_f09QOXMzs5xRx5lT7IaEVEQ&s">
+
+  <!-- Google Analytics para medir tráfico -->
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-85W2TDMXTH"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+
+    // Consent Mode v2 - por defecto negar cookies hasta aceptar
+    gtag('consent', 'default', {
+      'ad_storage': 'denied',        // Publicidad (Google Ads)
+      'analytics_storage': 'denied',  // Google Analytics
+      'functionality_storage': 'denied', // Cookies funcionales (opcional)
+      'security_storage': 'granted'   // Cookies de seguridad (permitidas)
+    });
+
+    gtag('js', new Date());
+
+    // Inicializar Google Analytics
+    gtag('config', 'G-85W2TDMXTH');
+  </script>
+
+
+  <title>Domicilios Pitalito | Rápidos y confiables | Domiciliosw</title>
+
+
+
+  <!-- Agrega las etiquetas de Schema.org para SEO Local -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Domicilios Pitalito",
+  "image": "https://www.domiciliosw.com/logo_w_fondo_negro.jpeg",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "José Hilario López Main Park Pitalito, Huila",
+    "addressLocality": "Pitalito",
+    "addressRegion": "Huila",
+    "postalCode": "417030",
+    "addressCountry": "CO"
+  },
+  "telephone": "+57 3134089563",
+  "url": "https://www.domiciliosw.com",
+  "sameAs": [
+    "https://www.facebook.com/envioswexpress/",
+    "https://www.instagram.com/envioswpitalito/"
+  ]
+}
+</script>
+
+
+  <!-- IA Markup & Rules URLs (si son necesarios) -->
+  <meta property="ia:markup_url" content="https://www.domiciliosw.com/markup" /> <!-- Agregado -->
+  <meta property="ia:markup_url_dev" content="https://www.domiciliosw.com/markup_dev" /> <!-- Agregado -->
+  <meta property="ia:rules_url" content="https://www.domiciliosw.com/rules" /> <!-- Agregado -->
+  <meta property="ia:rules_url_dev" content="https://www.domiciliosw.com/rules_dev" /> <!-- Agregado -->
+
 </head>
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.24/vanta.net.min.js"></script>
+
+</body>
+
 </html>

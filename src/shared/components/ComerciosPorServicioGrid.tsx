@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import CardComercio from "./CardComercio";
 import type { CardComercioProps } from "./CardComercio";
 import { useServicesUI } from "../../store/services.store";
@@ -13,6 +13,8 @@ import FormPagos from "../../features/OtherServices/FormPagos";
 import FormEnvios from "../../features/OtherServices/FormEnvios";
 import SearchBox from "./SearchBox";
 import { useUiStore } from "../../store/ui.store";
+import { SkeletonCardComercio } from "./SkeletonCardComercio";
+import CommerceGridSkeleton from "./CommerceGridSkeleton";
 
 const BRAND_ORANGE = "#FF6B00";
 
@@ -33,6 +35,8 @@ const ComerciosPorServicioGrid: React.FC = () => {
   const formType = useServicesUI((s) => s.formType);
   const serviceId = useServicesUI((s) => s.selectedServiceId);
   const q = useServicesUI((s) => s.search);
+  const setSearch = useServicesUI((s) => s.setSearch); // 👈 asegúrate de tener esta acción en el store
+
   const saveScroll = useServicesUI((s) => s.saveScrollForService);
   const getScroll = useServicesUI((s) => s.getScrollForService);
 
@@ -51,14 +55,26 @@ const ComerciosPorServicioGrid: React.FC = () => {
     () =>
       enabled && query.data
         ? flattenPages(query.data as any).map((c: any) =>
-            mapToCard(c, Number(serviceId))
-          )
+          mapToCard(c, Number(serviceId))
+        )
         : [],
     [enabled, query.data, serviceId]
   );
 
+  const handleSearch = useCallback(
+    (term: string) => {
+      setSearch(term);          // 👉 actualiza el estado global
+    },
+    [setSearch]
+  );
+
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const hasRestoredRef = useRef(false); // evita restaurar más de una vez por montaje
+
+  useEffect(() => {
+    hasRestoredRef.current = false;
+  }, [serviceId]);
+
 
   // ⭐ Restaurar scroll SOLO cuando la data ya está lista
   useEffect(() => {
@@ -67,7 +83,7 @@ const ComerciosPorServicioGrid: React.FC = () => {
     if (hasRestoredRef.current) return;
 
     const y = getScroll(serviceId);
-    if (!y || y <= 0) return;
+    if (!y || y <= 0) return;   // si no hay scroll guardado, no hacemos nada
 
     hasRestoredRef.current = true;
     setIsRestoringScroll(true);
@@ -75,13 +91,11 @@ const ComerciosPorServicioGrid: React.FC = () => {
     let timeoutId: number | undefined;
 
     const doScroll = () => {
-      // salto directo a la posición guardada
       window.scrollTo(0, y);
 
-      // pequeño delay solo para que el cambio no se vea brusco
       timeoutId = window.setTimeout(() => {
         setIsRestoringScroll(false);
-      }, 300);
+      }, 1000); // tu mínimo 1s
     };
 
     if (typeof requestAnimationFrame !== "undefined") {
@@ -118,13 +132,32 @@ const ComerciosPorServicioGrid: React.FC = () => {
   }, [isRestoringScroll]);
 
   // ⭐ Guardar scroll al salir de esta vista (cuando se desmonta el componente)
-  useEffect(() => {
-    if (!enabled || !serviceId) return;
+  // useEffect(() => {
+  //   if (!enabled || !serviceId) return;
 
+  //   return () => {
+  //     saveScroll(serviceId, window.scrollY);
+  //   };
+  // }, [enabled, serviceId, saveScroll]);
+
+  // 👉 para recordar el último serviceId válido
+  const lastServiceIdRef = useRef<number | null>(serviceId ?? null);
+
+  useEffect(() => {
+    if (serviceId) {
+      lastServiceIdRef.current = serviceId;
+    }
+  }, [serviceId]);
+
+  // ⭐ Guardar scroll SIEMPRE al desmontar el componente
+  useEffect(() => {
     return () => {
-      saveScroll(serviceId, window.scrollY);
+      const sid = lastServiceIdRef.current;
+      if (!sid) return;
+      saveScroll(sid, window.scrollY);
     };
-  }, [enabled, serviceId, saveScroll]);
+  }, [saveScroll]);
+
 
   // Infinite scroll
   useEffect(() => {
@@ -199,18 +232,23 @@ const ComerciosPorServicioGrid: React.FC = () => {
   if (query.status === "pending") {
     return (
       <div className="mx-auto w-full max-w-8xl p-3 sm:p-4">
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-100 bg-white px-4 py-6 shadow-sm">
-          <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-[color:var(--brand-orange,#FF6B00)]" />
-          <p className="text-sm font-medium text-slate-800">
-            Cargando comercios…
-          </p>
-          <p className="mt-1 text-xs text-slate-500">
-            Buscando los mejores aliados cerca de ti.
-          </p>
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <div className="skeleton h-4 w-40 mb-2 rounded" />
+            <div className="skeleton h-3 w-64 rounded" />
+          </div>
+          <div className="hidden sm:block skeleton h-8 w-40 rounded-full" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:gap-3 lg:gap-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <SkeletonCardComercio key={i} />
+          ))}
         </div>
       </div>
     );
   }
+
 
   if (query.status === "error") {
     return (
@@ -228,15 +266,9 @@ const ComerciosPorServicioGrid: React.FC = () => {
   return (
     <div className="mx-auto w-full max-w-8xl p-3 sm:p-4 relative">
       {isRestoringScroll && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90">
-          <div className="flex flex-col items-center gap-2 rounded-xl bg-white px-4 py-3 shadow-lg border border-slate-200">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-[color:var(--brand-orange,#FF6B00)]" />
-            <span className="text-sm font-medium text-slate-700">
-              Volviendo a tu posición…
-            </span>
-          </div>
-        </div>
+        <CommerceGridSkeleton text="Cargando…" />
       )}
+
 
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8 mt-3">
         {/* Título y textos */}
@@ -266,7 +298,12 @@ const ComerciosPorServicioGrid: React.FC = () => {
 
         {/* SearchBox alineado a la derecha */}
         <div className="w-full sm:w-auto sm:ml-auto">
-          <SearchBox onSearch={() => {}} />
+          <SearchBox
+            onSearch={handleSearch}
+            placeholder="Busca un comercio o servicio..."
+            initialValue={q ?? ""}
+            debounceMs={400}
+          />
         </div>
       </div>
 
