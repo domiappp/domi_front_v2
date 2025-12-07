@@ -9,6 +9,9 @@ import { compressToWebP } from '../../utils/imageHelper';
 import { BASE } from '../../utils/baseUrl';
 import type { Product } from '../../shared/types/products-type';
 import { useAuthStore } from '../../store/auth.store';
+import { useModalStore } from '../../store/modal.store';
+import Swal from 'sweetalert2';                           // 👈 import
+import { getErrorMessage } from '../../utils/http';
 
 export type FormProductoProps = {
   mode: 'create' | 'edit';
@@ -60,6 +63,7 @@ const FormProductos: React.FC<FormProductoProps> = ({
 }) => {
   const isEdit = mode === 'edit';
   const defaults = useMemo(() => makeDefaults(isEdit, initial), [isEdit, initial]);
+  const closeModal = useModalStore((s) => s.close);
 
   const {
     register,
@@ -140,42 +144,65 @@ const FormProductos: React.FC<FormProductoProps> = ({
     comercioId: comercioIdFromAuth
   });
 
+  console.log(categoriasRes)
   const categoriaOptions: Option[] =
     categoriasRes?.items?.map((c) => ({
       value: String(c.id),
       label: c.nombre ?? `Categoría ${c.id}`,
     })) ?? [];
 
-  // ---------- Submit ----------
+
+    
+      // ---------- Submit con Swal (igual que en categorías) ----------
   const onSubmit = handleSubmit(async (vals) => {
-    if (!comercioIdFromAuth) {
-      alert('No hay comercio asignado para este usuario.');
-      return;
-    }
+    try {
+      if (!comercioIdFromAuth) {
+        await Swal.fire({
+          title: 'Error',
+          text: 'No hay comercio asignado para este usuario.',
+          icon: 'error',
+        });
+        return;
+      }
 
-    const payload = {
-      ...vals,
-      comercioId: comercioIdFromAuth, // ✅ siempre el del auth
-      imagen: isEdit ? (imagenFile ?? undefined) : (imagenFile ?? null),
-    };
+      const payload = {
+        ...vals,
+        comercioId: comercioIdFromAuth, // ✅ siempre el del auth
+        imagen: isEdit ? (imagenFile ?? undefined) : (imagenFile ?? null),
+      };
 
-    if (isEdit) {
-      if (!initial?.id) return;
-      actualizar.mutate(
-        { id: initial.id, payload },
-        { onSuccess: (p) => onSuccess?.(p) }
-      );
-    } else {
-      crear.mutate(payload, {
-        onSuccess: (p) => {
-          reset(makeDefaults(false, null));
-          cleanupPreview();
-          onSuccess?.(p);
-        },
+      let p: any;
+      if (isEdit) {
+        if (!initial?.id) return;
+        p = await actualizar.mutateAsync({ id: initial.id, payload });
+      } else {
+        p = await crear.mutateAsync(payload);
+        reset(makeDefaults(false, null));
+        cleanupPreview();
+      }
+
+      // cerrar modal primero
+      closeModal();
+
+      // mostrar alerta de éxito
+      await Swal.fire({
+        title: isEdit ? 'Producto actualizado' : 'Producto creado',
+        text: 'La operación se realizó correctamente.',
+        icon: 'success',
+      });
+
+      // notificar al padre
+      onSuccess?.(p as Product);
+    } catch (err: any) {
+      const message = getErrorMessage(err);
+      await Swal.fire({
+        title: 'Error',
+        text: message,
+        icon: 'error',
       });
     }
   });
-
+  
   const loading = isSubmitting || crear.isPending || actualizar.isPending;
   const apiError = (crear.error as any)?.message || (actualizar.error as any)?.message;
 

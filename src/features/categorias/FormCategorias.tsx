@@ -44,6 +44,8 @@ const FormCategorias: React.FC<Props> = ({ mode, initial, onSuccess, onCancel })
   // ✅ Siempre usar el comercioId del usuario autenticado
   const comercioIdFromAuth = useAuthStore((s) => s.user?.comercioId ?? 0);
 
+  console.log(comercioIdFromAuth)
+  
   const {
     register,
     handleSubmit,

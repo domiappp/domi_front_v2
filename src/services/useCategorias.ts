@@ -44,81 +44,72 @@ export const useCategoriaById = (id?: number) => {
   })
 }
 
-// ✅ Hook: crear categoría
 export const useCreateCategoria = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (categoria: CreateCategoriaPayload) => {
-      try {
-        const { data } = await api.post<Categoria>('/categorias/crear', categoria)
-        return data
-      } catch (error) {
-        const axiosError = error as AxiosError<any>
-        throw new Error(axiosError.response?.data?.message || 'Error al crear categoría')
-      }
+      const { data } = await api.post<Categoria>('/categorias/crear', categoria)
+      return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categorias'] })
+      // 🔁 Todas las listas paginadas de categorías
+      queryClient.invalidateQueries({ queryKey: ['categorias'], exact: false })
+
+      // 🔁 Todas las listas de categorías por comercio
+      queryClient.invalidateQueries({ queryKey: ['categorias-comercio'], exact: false })
     },
   })
 }
 
-// ✅ Hook: actualizar categoría
 export const useUpdateCategoria = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async ({ id, payload }: { id: number; payload: UpdateCategoriaPayload }) => {
-      try {
-        const { data } = await api.patch<Categoria>(`/categorias/actualizar/${id}`, payload)
-        return data
-      } catch (error) {
-        const axiosError = error as AxiosError<any>
-        throw new Error(axiosError.response?.data?.message || 'Error al actualizar categoría')
-      }
+      const { data } = await api.patch<Categoria>(`/categorias/actualizar/${id}`, payload)
+      return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categorias'] })
+      queryClient.invalidateQueries({ queryKey: ['categorias'], exact: false })
+      queryClient.invalidateQueries({ queryKey: ['categorias-comercio'], exact: false })
     },
   })
 }
 
-// ✅ Hook: eliminar categoría
 export const useDeleteCategoria = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (id: number) => {
-      try {
-        const { data } = await api.delete(`/categorias/eliminar/${id}`)
-        return data
-      } catch (error) {
-        const axiosError = error as AxiosError<any>
-        throw new Error(axiosError.response?.data?.message || 'Error al eliminar categoría')
-      }
+      const { data } = await api.delete(`/categorias/eliminar/${id}`)
+      return data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categorias'] })
+      queryClient.invalidateQueries({ queryKey: ['categorias'], exact: false })
+      queryClient.invalidateQueries({ queryKey: ['categorias-comercio'], exact: false })
     },
   })
 }
 
-
-
-// ✅ Hook: obtener una categoría por ID
-export const useCategoriaByComercio = (id?: number) => {
-  return useQuery<ComercioCategoriasResponse>({
-    queryKey: ['categoria-comercio', id],
-    enabled: !!id,
+// ✅ Hook: obtener categorías por ID de comercio (sin paginación)
+export const useCategoriaByComercio = (comercioId?: number) => {
+  return useQuery<Categoria[]>({
+    queryKey: ['categorias-comercio', comercioId],
+    enabled: !!comercioId,
     queryFn: async () => {
       try {
-        const { data } = await api.get<ComercioCategoriasResponse>(`/comercio/listar-comercio/categorias/${id}`)
-        return data
+        const { data } = await api.get<Categoria[]>(
+          `/categorias/comercio/${comercioId}`,
+        );
+        return data;
       } catch (error) {
-        const axiosError = error as AxiosError<any>
-        throw new Error(axiosError.response?.data?.message || 'Error al cargar la categoría')
+        const axiosError = error as AxiosError<any>;
+        throw new Error(
+          axiosError.response?.data?.message ||
+            'Error al cargar las categorías del comercio',
+        );
       }
     },
-  })
-}
+  });
+};

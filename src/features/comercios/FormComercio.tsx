@@ -29,7 +29,7 @@ type FormComercioValues = {
   nit?: string
   descripcion?: string
   responsable?: string
-  email_contacto: string
+  email_contacto?: string
   telefono?: string
   telefono_secundario?: string
   direccion?: string
@@ -180,7 +180,12 @@ const FormComercio: React.FC<FormComercioProps> = ({ mode, initial, onSuccess, o
       if (!initial?.id) return
       actualizar.mutate(
         { id: initial.id, data: formData },
-        { onSuccess: (c) => onSuccess?.(c) }
+        {
+          onSuccess: (c) => {
+            onSuccess?.(c)
+            close()               // 👈 cierro aquí
+          },
+        },
       )
     } else {
       crear.mutate(formData, {
@@ -189,6 +194,7 @@ const FormComercio: React.FC<FormComercioProps> = ({ mode, initial, onSuccess, o
           reset(emptyDefaults)
           cleanupPreview()
           onSuccess?.(c)
+          close()                 // 👈 cierro aquí
         },
       })
     }
@@ -210,11 +216,11 @@ const FormComercio: React.FC<FormComercioProps> = ({ mode, initial, onSuccess, o
         </div>
 
         <div>
-          <Input label="Razón social" {...register('razon_social')} />
+          <Input type='hidden' label="Razón social" {...register('razon_social')} />
         </div>
 
         <div>
-          <Input label="Responsable" {...register('responsable')} />
+          <Input type='hidden' label="Responsable" {...register('responsable')} />
         </div>
 
 
@@ -226,11 +232,8 @@ const FormComercio: React.FC<FormComercioProps> = ({ mode, initial, onSuccess, o
         <div>
           <Input
             label="Email de contacto"
-            type="email"
-            {...register("email_contacto", {
-              validate: (v) =>
-                !v || /.+@.+\..+/.test(v) || "Email inválido",
-            })}
+            type="hidden"
+            {...register("email_contacto")}
             errorText={errors.email_contacto?.message}
           />
         </div>
