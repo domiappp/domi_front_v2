@@ -61,7 +61,7 @@ const NavbarAdmin: React.FC = () => {
               </div>
             </div>
             <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[60] p-2 shadow bg-base-100 rounded-box w-52">
-              <li className="menu-title"><span>Mi cuenta</span></li>
+              <li><Link to="/">Home</Link></li>
               <li><Link to="/dashboard">Dashboard</Link></li>
               <li><button className="text-error" onClick={openLogoutModal}>Cerrar sesión</button></li>
             </ul>

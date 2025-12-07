@@ -5,6 +5,7 @@ import { Select } from '../../shared/components/Select'
 import { useCreatePublicidad, useUpdatePublicidad } from '../../services/usePublicidad'
 import type { Publicidad } from '../../shared/types/publicidadTypes'
 import { BASE } from '../../utils/baseUrl'
+import { useModalStore } from '../../store/modal.store'
 
 type Props = {
   mode: 'create' | 'edit'
@@ -92,13 +93,21 @@ const FormPublicidad: React.FC<Props> = ({ mode, initial, onSuccess, onCancel })
     return fd
   }
 
-  const onSubmit = handleSubmit(async (values) => {
+    const closeModal = useModalStore((s) => s.close)
+
+
+const onSubmit = handleSubmit(async (values) => {
     const fd = buildFD(values)
     if (isEdit) {
       if (!initial?.id) return
       actualizar.mutate(
         { id: initial.id, formData: fd },
-        { onSuccess: (p) => onSuccess?.(p) }
+        {
+          onSuccess: (p) => {
+            onSuccess?.(p)
+            closeModal()          // 👈 cerrar modal al actualizar
+          },
+        }
       )
     } else {
       crear.mutate(fd, {
@@ -108,6 +117,7 @@ const FormPublicidad: React.FC<Props> = ({ mode, initial, onSuccess, onCancel })
           setFile(null)
           if (fileRef.current) fileRef.current.value = ''
           onSuccess?.(p)
+          closeModal()            // 👈 cerrar modal al crear
         },
       })
     }

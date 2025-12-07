@@ -10,6 +10,7 @@ import { BASE } from '../../utils/baseUrl'
 
 // 👉 IMPORTA la utilidad de compresión (ajusta la ruta si es necesario)
 import { compressToWebP } from '../../utils/imageHelper'
+import { useModalStore } from '../../store/modal.store'
 
 export type FormComercioProps = {
   mode: 'create' | 'edit'
@@ -72,9 +73,9 @@ function makeDefaults(isEdit: boolean, initial?: any): FormComercioValues {
       nit: '',
       descripcion: '',
       responsable: '',
-      email_contacto: '',
+      email_contacto: undefined,
       telefono: '',
-      telefono_secundario: '573208729276',
+      telefono_secundario: '573134089563',
       direccion: '',
       servicioId: undefined,
       estado: 1,
@@ -173,6 +174,8 @@ const FormComercio: React.FC<FormComercioProps> = ({ mode, initial, onSuccess, o
   const actualizar = useActualizarComercio()
 
   const buildFormData = (vals: FormComercioValues) => toFormData(vals, logoFile)
+const closeModal = useModalStore((s) => s.close);
+
 
   const onSubmit = handleSubmit(async (values) => {
     const formData = buildFormData(values)
@@ -184,6 +187,8 @@ const FormComercio: React.FC<FormComercioProps> = ({ mode, initial, onSuccess, o
           onSuccess: (c) => {
             onSuccess?.(c)
             close()               // 👈 cierro aquí
+            closeModal();
+
           },
         },
       )
@@ -195,6 +200,8 @@ const FormComercio: React.FC<FormComercioProps> = ({ mode, initial, onSuccess, o
           cleanupPreview()
           onSuccess?.(c)
           close()                 // 👈 cierro aquí
+          closeModal();
+
         },
       })
     }
@@ -215,28 +222,22 @@ const FormComercio: React.FC<FormComercioProps> = ({ mode, initial, onSuccess, o
           />
         </div>
 
-        <div>
-          <Input type='hidden' label="Razón social" {...register('razon_social')} />
-        </div>
 
-        <div>
-          <Input type='hidden' label="Responsable" {...register('responsable')} />
-        </div>
+        <Input type='hidden' label="Razón social" {...register('razon_social')} />
 
 
-        <div className="md:col-span-2 lg:col-span-3">
-          <Input label="Descripción" {...register('descripcion')} />
-        </div>
+
+        <Input type='hidden' label="Responsable" {...register('responsable')} />
 
 
-        <div>
-          <Input
-            label="Email de contacto"
-            type="hidden"
-            {...register("email_contacto")}
-            errorText={errors.email_contacto?.message}
-          />
-        </div>
+
+        <Input
+          label="Email de contacto"
+          type="hidden"
+          {...register("email_contacto")}
+          errorText={errors.email_contacto?.message}
+        />
+
 
 
         <div>
@@ -244,7 +245,8 @@ const FormComercio: React.FC<FormComercioProps> = ({ mode, initial, onSuccess, o
         </div>
 
 
-                {/* Servicio: Select dinámico */}
+
+        {/* Servicio: Select dinámico */}
         <div>
           {isLoadingServicios ? (
             <div className="form-control">
@@ -273,7 +275,14 @@ const FormComercio: React.FC<FormComercioProps> = ({ mode, initial, onSuccess, o
           )}
         </div>
 
-        <div className="md:col-span-2">
+        <div className="md:col-span-2 lg:col-span-3">
+          <Input label="Descripción" {...register('descripcion')} />
+        </div>
+
+
+
+
+        <div className="md:col-span-2 lg:col-span-3">
           <Input label="Dirección" {...register('direccion')} />
         </div>
 
