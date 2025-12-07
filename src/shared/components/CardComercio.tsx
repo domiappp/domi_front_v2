@@ -93,10 +93,8 @@ const Base = import.meta.env.VITE_API_URL;
 const CardComercio: React.FC<CardComercioProps> = ({
   id,
   nombre,
-  categoria,
   imagen,
   serviceId,
-  esFavorito, // no se usa
   rating = 0,
   reviews,
   abierto,
