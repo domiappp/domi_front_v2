@@ -23,24 +23,28 @@ export type CursorResponse<T> = {
 }
 
 export type ListByServiceParams = {
-  serviceId: number
+  serviceId: number | string   // acepta ambos
   q?: string
   limit?: number
 }
-
 export const comerciosPorServicioKeys = {
   all: ['comerciosPorServicio'] as const,
   list: (p: { serviceId: number; q: string; limit: number }) =>
     [...comerciosPorServicioKeys.all, 'list', p.serviceId, p.q, p.limit] as const,
 }
 
+
+
 function normalizeParams(p: ListByServiceParams) {
+  const serviceIdNum = Number(p.serviceId)
+
   return {
-    serviceId: p.serviceId,
+    serviceId: serviceIdNum,
     q: (p.q ?? '').trim(),
     limit: Math.min(p.limit ?? 20, 100),
   }
 }
+
 
 // 🔹 array vacío compartido para evitar crear `[]` en cada render
 const EMPTY_FAVORITOS: string[] = []
@@ -53,7 +57,7 @@ export function useComerciosPorServicioInfinite(
   opts?: { enabled?: boolean; staleTime?: number; gcTime?: number }
 ) {
   const norm = normalizeParams(params)
-  const enabled = (opts?.enabled ?? true) && Number.isFinite(norm.serviceId)
+const enabled = (opts?.enabled ?? true) && Number.isFinite(norm.serviceId) && norm.serviceId > 0
 
   const favoritosIds = useFavoritosStore((state) => {
     const key = String(norm.serviceId)

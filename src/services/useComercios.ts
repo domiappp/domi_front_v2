@@ -2,6 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { Commerce, ListComerciosParams, PagedResponse, SortOrder } from "../shared/types/comercioTypes";
 import { api } from "../config/axios";
+import { comerciosPorServicioKeys } from './useComerciosPorServicio';
 
 // =========================
 // Keys de caché (estables)
@@ -92,14 +93,21 @@ export function useCrearComercio() {
     mutationFn: async (formData) => {
       const { data } = await api.post<Commerce>('/comercio/crear', formData, {
         withCredentials: true,
-        // No pongas Content-Type: Axios lo calcula para FormData
       })
       return data
     },
     onSuccess: (created) => {
-      // Actualiza cache de detalle y revalida listas
+      // cache detalle
       qc.setQueryData<Commerce>(comercioKeys.detail(created.id), created)
-      qc.invalidateQueries({ queryKey: comercioKeys.all })
+
+      // 🔁 revalidar TODAS las listas de comercios "normales"
+      qc.invalidateQueries({ queryKey: comercioKeys.all, exact: false })
+
+      // 🔁 revalidar TODAS las listas de comercios por servicio (infinite)
+      qc.invalidateQueries({
+        queryKey: comerciosPorServicioKeys.all, // ['comerciosPorServicio']
+        exact: false,                           // que afecte a ['comerciosPorServicio','list',...]
+      })
     },
   })
 }
@@ -121,7 +129,13 @@ export function useActualizarComercio() {
     },
     onSuccess: (updated) => {
       qc.setQueryData<Commerce>(comercioKeys.detail(updated.id), updated)
-      qc.invalidateQueries({ queryKey: comercioKeys.all })
+
+      qc.invalidateQueries({ queryKey: comercioKeys.all, exact: false })
+
+      qc.invalidateQueries({
+        queryKey: comerciosPorServicioKeys.all,
+        exact: false,
+      })
     },
   })
 }
