@@ -102,8 +102,8 @@ const HomePage: React.FC = () => {
         <SliderHome />
       </div>
 
-      <div className="w-full bg-white py-4">
-        <div className="w-full lg:container mx-auto bg-white">
+      <div className="w-full bg-slate-50 py-4">
+        <div className="w-full lg:container mx-auto">
           <CategoriesSlider />
         </div>
       </div>

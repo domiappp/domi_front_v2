@@ -316,7 +316,7 @@ const ComerciosPorServicioGrid: React.FC = () => {
       <div ref={sentinelRef} style={{ height: 1 }} />
 
       {query.isFetchingNextPage && (
-        <p className="text-center py-3 text-xs sm:text-sm text-[color:var(--brand-orange,#FF6B00)]">
+        <p className="text-center py-3 text-xs sm:text-sm text-[#FF6B00]">
           Cargando más comercios…
         </p>
       )}

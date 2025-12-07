@@ -80,7 +80,7 @@ const LoginPage: React.FC = () => {
 
 
   return (
-    <div className="relative min-h-screen overflow-hidden w-full bg-gradient-to-br from-[#FF6600] via-[#FF7A26] to-[#FF9A57] text-white">
+    <div className="relative min-h-screen overflow-hidden w-full bg-gradient-to- from-[#FF6600] via-[#FF7A26] to-[#FF9A57] text-white">
       {/* Orbes */}
       <div className="pointer-events-none absolute inset-0 z-0 select-none overflow-hidden">
         <div className="absolute -left-24 top-10 h-56 w-56 rounded-full bg-white/10" />

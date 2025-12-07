@@ -47,6 +47,7 @@ export interface CommercePublic {
   direccion: string;
   telefono: string;
   estado_comercio: number; // 1 = abierto, 0 = cerrado (o como lo manejes)
+  estado_servicio?: number
 }
 
 // Categoría pública

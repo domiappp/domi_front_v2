@@ -113,3 +113,26 @@ export const useCategoriaByComercio = (comercioId?: number) => {
     },
   });
 };
+
+// ✅ Hook: obtener una categoría por ID
+export const useCategoriaByComercio2 = (id?: number) => {
+  return useQuery<ComercioCategoriasResponse>({
+    queryKey: ['categoria-comercio', id],
+    enabled: !!id,
+
+    queryFn: async () => {
+      try {
+        const { data } = await api.get<ComercioCategoriasResponse>(
+          `/comercio/listar-comercio/categorias/${id}`
+        )
+        return data
+      } catch (error) {
+        const axiosError = error as AxiosError<any>
+        console.error('Error cargando categoría:', axiosError)
+
+        // ❗ Importante: volver a lanzar el error para que React Query lo capture
+        throw axiosError
+      }
+    },
+  })
+}

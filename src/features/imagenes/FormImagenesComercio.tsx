@@ -22,6 +22,16 @@ type FormVals = {
   imagen?: FileList;
 };
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+const getImageUrl = (path?: string | null) => {
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${API_BASE_URL}/archivos/${path}`;
+};
+
+
+
 const FormImagenesComercio: React.FC<Props> = ({
   comercioId,
   mode,
@@ -133,7 +143,7 @@ const FormImagenesComercio: React.FC<Props> = ({
           />
           {isEdit && initial?.url && (
             <img
-              src={initial.url}
+              src={getImageUrl(initial.url)}
               alt="actual"
               className="mt-2 h-24 w-32 object-cover border rounded-md"
             />

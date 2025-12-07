@@ -14,6 +14,15 @@ interface Props {
   comercioId: number;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+const getImageUrl = (path?: string | null) => {
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${API_BASE_URL}/archivos/${path}`;
+};
+
+
 const TablaImagenesComercio: React.FC<Props> = ({ comercioId }) => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -22,6 +31,7 @@ const TablaImagenesComercio: React.FC<Props> = ({ comercioId }) => {
   const [sortBy, setSortBy] = useState<'id' | 'orden' | 'creado_en' | 'actualizado_en'>('orden');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
 
+  
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 400);
     return () => clearTimeout(t);
@@ -93,7 +103,7 @@ const TablaImagenesComercio: React.FC<Props> = ({ comercioId }) => {
         name: 'Vista previa',
         cell: (r) => (
           <img
-            src={r.url}
+      src={getImageUrl(r.url)}
             alt="imagen comercio"
             className="h-14 w-20 object-cover rounded-md border"
           />

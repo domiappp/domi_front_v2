@@ -31,6 +31,15 @@ export interface ListImagenesParams {
 }
 
 // ==============================
+// Helpers de validación
+// ==============================
+function ensureValidId(label: string, value: number) {
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new Error(`${label} inválido`)
+  }
+}
+
+// ==============================
 // Cache keys
 // ==============================
 export const imagenKeys = {
@@ -68,6 +77,9 @@ export function useImagenesComercio(
   return useQuery<PagedResponse<ImagenComercio>, Error>({
     queryKey: enabled ? imagenKeys.list(comercioId!, norm) : ['imagenes', 'disabled'],
     queryFn: async ({ signal }) => {
+      // seguridad adicional por si acaso
+      ensureValidId('comercioId', comercioId as number)
+
       const { data } = await api.get<PagedResponse<ImagenComercio>>(
         `/comercios/${comercioId}/imagenes`,
         { params: norm, signal },
@@ -88,7 +100,9 @@ export function useImagenComercio(
   imagenId: number | undefined,
   opts?: { enabled?: boolean; staleTime?: number },
 ) {
-  const enabled = (opts?.enabled ?? true) && Number.isFinite(comercioId) && Number.isFinite(imagenId)
+  const enabled =
+    (opts?.enabled ?? true) && Number.isFinite(comercioId) && Number.isFinite(imagenId)
+
   const queryKey = enabled
     ? imagenKeys.detail(comercioId!, imagenId!)
     : ['imagenes', 'detail', '__disabled__']
@@ -96,6 +110,9 @@ export function useImagenComercio(
   return useQuery<ImagenComercio, Error>({
     queryKey,
     queryFn: async ({ signal }) => {
+      ensureValidId('comercioId', comercioId as number)
+      ensureValidId('imagenId', imagenId as number)
+
       const { data } = await api.get<ImagenComercio>(
         `/comercios/${comercioId}/imagenes/${imagenId}`,
         { signal },
@@ -118,6 +135,8 @@ export function useCrearImagenComercio(comercioId: number) {
   return useMutation<ImagenComercio, Error, FormData>({
     mutationKey: ['imagenes', 'crear', comercioId],
     mutationFn: async (formData) => {
+      ensureValidId('comercioId', comercioId)
+
       const { data } = await api.post<ImagenComercio>(
         `/comercios/${comercioId}/imagenes`,
         formData,
@@ -142,6 +161,9 @@ export function useActualizarImagenComercio(comercioId: number) {
   return useMutation<ImagenComercio, Error, { id: number; data: FormData }>({
     mutationKey: ['imagenes', 'actualizar', comercioId],
     mutationFn: async ({ id, data }) => {
+      ensureValidId('comercioId', comercioId)
+      ensureValidId('imagenId', id)
+
       const res = await api.patch<ImagenComercio>(
         `/comercios/${comercioId}/imagenes/${id}`,
         data,
@@ -164,6 +186,9 @@ export function useEliminarImagenComercio(comercioId: number) {
   return useMutation<{ ok: true }, Error, number>({
     mutationKey: ['imagenes', 'eliminar', comercioId],
     mutationFn: async (imagenId) => {
+      ensureValidId('comercioId', comercioId)
+      ensureValidId('imagenId', imagenId)
+
       const { data } = await api.delete<{ ok: true }>(
         `/comercios/${comercioId}/imagenes/${imagenId}`,
       )
