@@ -34,6 +34,7 @@ export interface CategoriasParams {
   comercioId?: number;
   sortBy?: 'id' | 'nombre';
   sortOrder?: 'ASC' | 'DESC';
+  
 }
 
 

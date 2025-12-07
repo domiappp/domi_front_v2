@@ -11,11 +11,13 @@ export const comercioKeys = {
   list: (params: Partial<ListComerciosParams> = {}) =>
     [...comercioKeys.all, 'list', normalizeListParams(params)] as const,
 
-  // 👇 AGREGA ESTO
   popularList: (params: Partial<ListComerciosParams> = {}) =>
     [...comercioKeys.all, 'popular-list', normalizeListParams(params)] as const,
 
   detail: (id: number) => [...comercioKeys.all, 'detail', id] as const,
+
+  // 👇 NUEVO: lista simple de comercios activos (id + nombre)
+  activos: ['comercios', 'activos'] as const,
 }
 
 
@@ -190,6 +192,31 @@ export function useComerciosPopulares(
           signal,
         }
       )
+      return data
+    },
+    enabled,
+    retry: false,
+    staleTime: opts?.staleTime ?? DEFAULT_STALE_TIME,
+  })
+
+  
+}
+
+export type CommerceLite = Pick<Commerce, 'id' | 'nombre_comercial'>
+
+
+export function useComerciosActivos(
+  opts?: { enabled?: boolean; staleTime?: number },
+) {
+  const enabled = opts?.enabled ?? true
+
+  return useQuery<CommerceLite[], Error>({
+    queryKey: comercioKeys.activos,
+    queryFn: async ({ signal }) => {
+      const { data } = await api.get<CommerceLite[]>('/comercio/activos', {
+        withCredentials: true,
+        signal,
+      })
       return data
     },
     enabled,

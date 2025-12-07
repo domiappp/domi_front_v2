@@ -7,6 +7,7 @@ import { useCategorias, useDeleteCategoria } from '../../services/useCategorias'
 import type { Categoria } from '../../shared/types/categoriasTypes';
 import { useGlobalModal } from '../../store/modal.store';
 import FormCategorias from './FormCategorias';
+import { useAuthStore } from '../../store/auth.store';
 
 const TablaCategorias: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -15,6 +16,9 @@ const TablaCategorias: React.FC = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sortBy, setSortBy] = useState<'id' | 'nombre'>('id');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('DESC');
+
+
+const comercioId = useAuthStore((s) => s.user?.comercioId)
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 400);
@@ -27,6 +31,8 @@ const TablaCategorias: React.FC = () => {
     search: debouncedSearch || undefined,
     sortBy,
     sortOrder,
+      comercioId: comercioId ?? undefined,   // 👈 aquí lo mandas
+
   });
 
   const items = useMemo<Categoria[]>(() => data?.items ?? [], [data?.items]);

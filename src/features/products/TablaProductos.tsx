@@ -5,6 +5,7 @@ import { useProducts, useDeleteProduct } from '../../services/useProducts';
 import type { Product } from '../../shared/types/products-type';
 import { useGlobalModal } from '../../store/modal.store';
 import FormProductos from './FormProductos';
+import { useAuthStore } from '../../store/auth.store';
 
 const TablaProductos: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -19,12 +20,16 @@ const TablaProductos: React.FC = () => {
     return () => clearTimeout(t);
   }, [search]);
 
+  const comercioId = useAuthStore((s) => s.user?.comercioId)
+  
+
   const { data, isLoading, isError, error } = useProducts({
     page,
     limit,
     search: debouncedSearch || undefined,
     sortBy,
     sortOrder,
+    comercioId
   });
 
   const items = useMemo(() => data?.items ?? [], [data?.items]);

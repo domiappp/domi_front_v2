@@ -4,11 +4,11 @@ import { useAuthStore } from '../../store/auth.store';
 
 const Imagenes: React.FC = () => {
 
-    const auth = useAuthStore(); // Reemplaza con el ID real del comercio
-console.log("Comercio ID en Imagenes.tsx:", auth.user);
+  const auth = useAuthStore(); // Reemplaza con el ID real del comercio
+  console.log("Comercio ID en Imagenes.tsx:", auth.user?.comercioId);
   return (
     <>
-    <LayoutImagenesComercio comercioId={Number(2)} />
+      <LayoutImagenesComercio comercioId={Number(auth.user?.comercioId)} />
     </>
   )
 }

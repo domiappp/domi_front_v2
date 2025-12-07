@@ -137,6 +137,7 @@ const FormProductos: React.FC<FormProductoProps> = ({
     limit: 100,
     sortBy: 'nombre',
     sortOrder: 'ASC',
+    comercioId: comercioIdFromAuth
   });
 
   const categoriaOptions: Option[] =

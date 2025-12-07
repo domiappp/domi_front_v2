@@ -35,6 +35,7 @@ const FormCategorias: React.FC<Props> = ({ mode, initial, onSuccess, onCancel })
   const isEdit = mode === 'edit';
   const defaults = useMemo(() => makeDefaults(isEdit, initial ?? null), [isEdit, initial]);
 
+  
   const queryClient = useQueryClient();
   const closeModal = useModalStore((s) => s.close);
   const crear = useCreateCategoria();

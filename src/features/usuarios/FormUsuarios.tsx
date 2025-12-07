@@ -1,13 +1,16 @@
+// src/components/usuarios/FormUsuarios.tsx
 import React, { useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
+import ReactSelect from 'react-select';
 import { Input } from '../../shared/components/Input';
 import { Select } from '../../shared/components/Select';
 import type { UserList } from '../../shared/types/users-type';
 import { useCreateUsuario, useUpdateUsuario } from '../../services/useUsers';
 import { useModalStore } from '../../store/modal.store';
 import { getErrorMessage, getFieldErrors } from '../../utils/http';
+import { useComerciosActivos } from '../../services/useComercios';
 
 type Props = {
   mode: 'create' | 'edit';
@@ -35,6 +38,7 @@ type FormVals = {
   telefono?: string;
   password?: string;
   confirmPassword?: string;
+  comercioId?: number; // 👈 NUEVO: el comercio al que pertenece el usuario
 };
 
 function makeDefaults(isEdit: boolean, initial?: UserList | null): FormVals {
@@ -48,6 +52,11 @@ function makeDefaults(isEdit: boolean, initial?: UserList | null): FormVals {
       telefono: initial.telefono ?? '',
       password: '',
       confirmPassword: '',
+      // ajusta según cómo te llegue el comercio en UserList (comercio?.id, comercioId, etc.)
+      comercioId:
+        (initial as any).comercioId ??
+        (initial as any).comercio?.id ??
+        undefined,
     };
   }
   return {
@@ -59,6 +68,7 @@ function makeDefaults(isEdit: boolean, initial?: UserList | null): FormVals {
     telefono: '',
     password: '',
     confirmPassword: '',
+    comercioId: undefined,
   };
 }
 
@@ -69,6 +79,19 @@ const FormUsuarios: React.FC<Props> = ({ mode, initial, onSuccess, onCancel }) =
   const queryClient = useQueryClient();
   const closeModal = useModalStore((s) => s.close);
 
+  // 👉 Comercios activos para el select (id + nombre_comercial)
+  const {
+    data: comerciosActivos,
+    isLoading: isLoadingComercios,
+    isError: isComerciosError,
+  } = useComerciosActivos();
+
+  const comercioOptions =
+    comerciosActivos?.map((c) => ({
+      value: c.id,
+      label: c.nombre_comercial,
+    })) ?? [];
+
   const {
     register,
     handleSubmit,
@@ -76,6 +99,8 @@ const FormUsuarios: React.FC<Props> = ({ mode, initial, onSuccess, onCancel }) =
     reset,
     watch,
     setError,
+    control,
+    setValue,
   } = useForm<FormVals>({
     defaultValues: defaults,
     mode: 'onBlur',
@@ -90,6 +115,14 @@ const FormUsuarios: React.FC<Props> = ({ mode, initial, onSuccess, onCancel }) =
   }, [defaults, reset]);
 
   const password = watch('password');
+  const selectedRol = watch('rol');
+
+  // Si cambian el rol a algo distinto de "comercio", limpiamos comercioId
+  useEffect(() => {
+    if (selectedRol !== 'comercio') {
+      setValue('comercioId', undefined, { shouldDirty: true });
+    }
+  }, [selectedRol, setValue]);
 
   const onSubmit = handleSubmit(async (values) => {
     const { confirmPassword, ...rest } = values;
@@ -108,13 +141,35 @@ const FormUsuarios: React.FC<Props> = ({ mode, initial, onSuccess, onCancel }) =
           direccion: rest.direccion || undefined,
           telefono: rest.telefono || undefined,
         };
+
+        // Solo enviamos comercioId si el rol es comercio (Aliado)
+        if (rest.rol === 'comercio') {
+          payload.comercioId = rest.comercioId ?? undefined;
+        } else {
+          payload.comercioId = undefined;
+        }
+
         if (rest.password && rest.password.length >= 6) {
           payload.password = rest.password;
         }
 
         u = await actualizar.mutateAsync({ id: initial.id, payload });
       } else {
-        u = await crear.mutateAsync(rest as any);
+        const payload: any = {
+          name: rest.name,
+          email: rest.email,
+          rol: rest.rol,
+          estado: rest.estado,
+          direccion: rest.direccion || undefined,
+          telefono: rest.telefono || undefined,
+          password: rest.password,
+        };
+
+        if (rest.rol === 'comercio') {
+          payload.comercioId = rest.comercioId ?? undefined;
+        }
+
+        u = await crear.mutateAsync(payload as any);
         reset(makeDefaults(false, null));
       }
       closeModal();
@@ -152,7 +207,6 @@ const FormUsuarios: React.FC<Props> = ({ mode, initial, onSuccess, onCancel }) =
 
   const loading = isSubmitting || crear.isPending || actualizar.isPending;
 
-  // puedes seguir mostrando un banner si quieres
   const apiError =
     (crear.error as any)?.message || (actualizar.error as any)?.message;
 
@@ -194,6 +248,53 @@ const FormUsuarios: React.FC<Props> = ({ mode, initial, onSuccess, onCancel }) =
             errorText={errors.rol as any}
           />
         </div>
+
+        {/* SOLO CUANDO ES COMERCIO (ALIADO) 👉 Select2-like con react-select */}
+        {selectedRol === 'comercio' && (
+          <div className="md:col-span-2 lg:col-span-2">
+            <Controller
+              control={control}
+              name="comercioId"
+              rules={{
+                required: 'Selecciona un comercio aliado',
+              }}
+              render={({ field }) => {
+                const selectedOption =
+                  comercioOptions.find((opt) => opt.value === field.value) ?? null;
+
+                return (
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text">Comercio aliado</span>
+                    </label>
+                    <ReactSelect
+                      {...field}
+                      options={comercioOptions}
+                      isSearchable
+                      isClearable
+                      classNamePrefix="react-select"
+                      value={selectedOption}
+                      onChange={(option) =>
+                        field.onChange(option ? (option as any).value : undefined)
+                      }
+                      isDisabled={isLoadingComercios || isComerciosError}
+                      placeholder={
+                        isLoadingComercios
+                          ? 'Cargando comercios...'
+                          : 'Buscar y seleccionar comercio'
+                      }
+                    />
+                    {errors.comercioId && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.comercioId.message}
+                      </p>
+                    )}
+                  </div>
+                );
+              }}
+            />
+          </div>
+        )}
 
         {isEdit && (
           <div>
