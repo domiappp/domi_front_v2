@@ -9,6 +9,7 @@ import { useCategoriaByComercio2 } from "../../services/useCategorias"
 import { useProductsByComercioCategoria } from "../../services/useProducts"
 import { useCartStore } from "../../store/cart.store"
 import { useGlobalModal } from "../../store/modal.store"
+import { useImagenesComercioAll } from "../../services/useImagenesComercio" // 👈 NUEVO HOOK
 
 import {
   ShoppingCart,
@@ -52,6 +53,20 @@ const productosImg = [
       "https://img.freepik.com/vector-gratis/conjunto-banners-restaurante-foto_23-2147859055.jpg?semt=ais_hybrid&w=740&q=80",
   },
 ]
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+
+  const getLogoUrl = (path?: string | null) => {
+    const fallback =
+      "https://img.daisyui.com/images/profile/demo/yellingcat@192.webp"
+
+    if (!path) return fallback
+    // si ya viene como URL absoluta
+    if (/^https?:\/\//i.test(path)) return path
+
+    // 👈 tu backend sirve estáticos en /archivos
+    return `${API_BASE_URL}/archivos/${path}`
+  }
 
 const ComercioPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -114,12 +129,24 @@ const ComercioPage: React.FC = () => {
   // 🔁 este useEffect debe llamarse SIEMPRE, no después de returns condicionales
   useEffect(() => {
     if (!comercio) return
+
     if (estadoServicio === 1) {
+      // Solo galería
       setViewMode("galeria")
     } else {
+      // 0 (productos), 2 (ambos) o undefined
       setViewMode("productos")
     }
   }, [comercio, estadoServicio])
+
+  // 👇 Traer imágenes para la galería (antes del comentario de hooks)
+  const {
+    data: imagenesData,
+    isLoading: loadingImagenes,
+    isError: errorImagenes,
+  } = useImagenesComercioAll(comercioId, {
+    enabled: showGaleria,
+  })
 
   // 👉 abrir modal de compartir
   const handleOpenShareModal = () => {
@@ -140,7 +167,7 @@ const ComercioPage: React.FC = () => {
             {/* WhatsApp */}
             <a
               href={`https://wa.me/?text=${encodeURIComponent(
-                `Mira este comercio: ${title} ${url}`
+                `Mira este comercio: ${title} ${url}`,
               )}`}
               target="_blank"
               rel="noreferrer"
@@ -221,6 +248,14 @@ const ComercioPage: React.FC = () => {
       imagen: product.imagen,
     })
   }
+
+  // Adaptamos imágenes del backend al formato que usa GaleriaImagenes
+  const productosGaleria =
+    imagenesData?.map((img) => ({
+      id: String(img.id),
+      nombre: img.mensaje || `Imagen ${img.id}`,
+      imagen: img.url,
+    })) ?? []
 
   return (
     <div className="mb-32">
@@ -311,10 +346,8 @@ const ComercioPage: React.FC = () => {
                 <div className="rounded-2xl bg-white/80 border border-orange-100 shadow-lg p-2">
                   <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center">
                     <img
-                      src={
-                        (comercio as any)?.logo_url ||
-                        "https://img.daisyui.com/images/profile/demo/yellingcat@192.webp"
-                      }
+                src={getLogoUrl((comercio as any)?.logo_url)}
+
                       alt={comercio?.nombre_comercial || "Logo del comercio"}
                       className="w-full h-full object-cover"
                     />
@@ -335,8 +368,8 @@ const ComercioPage: React.FC = () => {
 
       {/* CONTENIDO */}
       <div className="container mx-auto px-4 py-6">
-        {/* SWITCH PRODUCTOS / GALERÍA */}
-        {showProductos && showGaleria && (
+        {/* SWITCH PRODUCTOS / GALERÍA (solo cuando estado_servicio = 2) */}
+        {estadoServicio === 2 && (
           <div className="flex justify-center mb-6">
             <div className="inline-flex rounded-full bg-white/80 shadow-md border border-gray-200 p-1">
               <button
@@ -395,7 +428,23 @@ const ComercioPage: React.FC = () => {
 
         {/* Vista GALERÍA */}
         {showGaleria && viewMode === "galeria" && (
-          <GaleriaImagenes productos={productosImg} />
+          <>
+            {loadingImagenes && (
+              <div className="mt-4">Cargando galería de imágenes...</div>
+            )}
+            {errorImagenes && (
+              <div className="mt-4 text-red-500">
+                Error al cargar la galería de imágenes
+              </div>
+            )}
+            {!loadingImagenes && !errorImagenes && (
+              <GaleriaImagenes
+                productos={
+                  productosGaleria.length > 0 ? productosGaleria : productosImg
+                }
+              />
+            )}
+          </>
         )}
 
         {/* BOTÓN CARRITO */}

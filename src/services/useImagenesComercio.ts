@@ -48,6 +48,10 @@ export const imagenKeys = {
     [...imagenKeys.all, 'list', comercioId, normalizeListParams(params)] as const,
   detail: (comercioId: number, id: number) =>
     [...imagenKeys.all, 'detail', comercioId, id] as const,
+
+  // 👉 NUEVO
+  allByComercio: (comercioId: number) =>
+    [...imagenKeys.all, 'allByComercio', comercioId] as const,
 }
 
 function normalizeListParams(p: Partial<ListImagenesParams>) {
@@ -211,4 +215,35 @@ export function toImagenFormData<T extends Record<string, any>>(obj: T, file?: F
   })
   if (file) fd.append('imagen', file) // backend espera el campo 'imagen'
   return fd
+}
+
+
+// ==============================
+// LISTAR TODAS LAS IMÁGENES DE UN COMERCIO (sin paginación)
+// ==============================
+export function useImagenesComercioAll(
+  comercioId: number | undefined,
+  opts?: { enabled?: boolean; staleTime?: number },
+) {
+  const enabled = (opts?.enabled ?? true) && Number.isFinite(comercioId)
+
+  const queryKey = enabled
+    ? imagenKeys.allByComercio(comercioId!)
+    : ['imagenes', 'allByComercio', '__disabled__']
+
+  return useQuery<ImagenComercio[], Error>({
+    queryKey,
+    queryFn: async ({ signal }) => {
+      ensureValidId('comercioId', comercioId as number)
+
+      const { data } = await api.get<ImagenComercio[]>(
+        `/comercios/${comercioId}/imagenes/all`,
+        { signal },
+      )
+      return data
+    },
+    enabled,
+    retry: false,
+    staleTime: opts?.staleTime ?? DEFAULT_STALE_TIME,
+  })
 }
