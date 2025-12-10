@@ -2,6 +2,7 @@ import React from "react";
 import { ShoppingCart, MapPin, Menu, X, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../../store/auth.store";
 
 const BRAND = {
   primary: "#FF6B00",      // naranja principal
@@ -39,6 +40,15 @@ const NavLink: React.FC<NavLinkProps> = ({
 const Navbar: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const close = () => setOpen(false);
+
+  // 👇 usuario desde Zustand
+  const user = useAuthStore((s) => s.user);
+
+  // 👇 URL del panel según rol
+  const panelUrl =
+    user?.rol === "administrador"
+      ? "/dashboard"
+      : "/productos";
 
   return (
     <header
@@ -138,6 +148,19 @@ const Navbar: React.FC = () => {
               className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border p-1.5 text-[15px] shadow-2xl bg-white"
               style={{ borderColor: "#E5E7EB", color: "#111827" }}
             >
+              {/* 👇 NUEVO: Ir al panel solo si hay usuario */}
+              {user && (
+                <li>
+                  <Link
+                    to={panelUrl}
+                    className="block rounded-lg px-3 py-2 hover:bg-slate-50 font-semibold text-slate-800"
+                    onClick={close}
+                  >
+                    Ir al panel
+                  </Link>
+                </li>
+              )}
+
               <li>
                 <a className="block rounded-lg px-3 py-2 hover:bg-slate-50">Perfil</a>
               </li>

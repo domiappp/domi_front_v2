@@ -238,3 +238,90 @@ export function useComerciosActivos(
     staleTime: opts?.staleTime ?? DEFAULT_STALE_TIME,
   })
 }
+
+
+
+// 0=productos, 1=imagenes, 2=ambos
+export type EstadoServicio = 0 | 1 | 2
+
+export interface EstadoServicioResponse {
+  id: number
+  estado_servicio: EstadoServicio
+}
+
+
+// =========================
+// GET: estado_servicio por comercio
+// =========================
+export function useEstadoServicioComercio(
+  comercioId: number | undefined,
+  opts?: { enabled?: boolean; staleTime?: number },
+) {
+  const enabled =
+    (opts?.enabled ?? true) &&
+    typeof comercioId === 'number' &&
+    Number.isFinite(comercioId)
+
+  // key similar al resto de hooks
+  const queryKey = enabled
+    ? ([...comercioKeys.all, 'estado-servicio', comercioId] as const)
+    : ([...comercioKeys.all, 'estado-servicio', '__disabled__'] as const)
+
+  return useQuery<EstadoServicioResponse, Error>({
+    queryKey,
+    queryFn: async ({ signal }) => {
+      const { data } = await api.get<EstadoServicioResponse>(
+        `/comercio/${comercioId}/estado-servicio`,
+        {
+          withCredentials: true,
+          signal,
+        },
+      )
+      return data
+    },
+    enabled,
+    retry: false,
+    staleTime: opts?.staleTime ?? DEFAULT_STALE_TIME,
+  })
+}
+
+// =========================
+// PATCH: actualizar estado_servicio
+// =========================
+export function useActualizarEstadoServicioComercio() {
+  const qc = useQueryClient()
+
+  return useMutation<
+    EstadoServicioResponse,
+    Error,
+    { comercioId: number; estado_servicio: EstadoServicio }
+  >({
+    mutationKey: [...comercioKeys.all, 'estado-servicio', 'actualizar'],
+    mutationFn: async ({ comercioId, estado_servicio }) => {
+      const { data } = await api.patch<EstadoServicioResponse>(
+        `/comercio/${comercioId}/estado-servicio`,
+        { estado_servicio },
+        {
+          withCredentials: true,
+        },
+      )
+      return data
+    },
+    onSuccess: (data) => {
+      // ✅ actualiza el cache puntual de este estado_servicio
+      qc.setQueryData<EstadoServicioResponse>(
+        [...comercioKeys.all, 'estado-servicio', data.id],
+        data,
+      )
+
+      // ✅ refresca el detalle del comercio por si lo usas en otros lados
+      qc.invalidateQueries({
+        queryKey: comercioKeys.detail(data.id),
+        exact: true,
+      })
+
+      // Opcional: revalidar listas si te interesa
+      qc.invalidateQueries({ queryKey: comercioKeys.all, exact: false })
+    },
+  })
+}

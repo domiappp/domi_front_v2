@@ -9,15 +9,9 @@ import { useCategoriaByComercio2 } from "../../services/useCategorias"
 import { useProductsByComercioCategoria } from "../../services/useProducts"
 import { useCartStore } from "../../store/cart.store"
 import { useGlobalModal } from "../../store/modal.store"
-import { useImagenesComercioAll } from "../../services/useImagenesComercio" // 👈 NUEVO HOOK
+import { useImagenesComercioAll } from "../../services/useImagenesComercio"
 
-import {
-  ShoppingCart,
-  ArrowLeft,
-  Share2,
-  MapPin,
-  Info,
-} from "lucide-react"
+import { ShoppingCart, ArrowLeft, Share2, MapPin, Info } from "lucide-react"
 
 interface ProductoAdaptado {
   id: string
@@ -27,50 +21,22 @@ interface ProductoAdaptado {
   imagen: string
 }
 
-const productosImg = [
-  {
-    id: "1",
-    nombre: "Imagen 1",
-    imagen:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0TXbb0QH6YAytgZTGJbPdqH06UNZShNGQ0A&s",
-  },
-  {
-    id: "2",
-    nombre: "Imagen 2",
-    imagen:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0OJmpccbG0Eq7zWnULcZVSdILsqZBTqEDFg&s",
-  },
-  {
-    id: "3",
-    nombre: "Imagen 3",
-    imagen:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcFPOgWraYIg-tD9CVg7GUBqzI7tw75hKr-g&s",
-  },
-  {
-    id: "4",
-    nombre: "Banner Restaurante",
-    imagen:
-      "https://img.freepik.com/vector-gratis/conjunto-banners-restaurante-foto_23-2147859055.jpg?semt=ais_hybrid&w=740&q=80",
-  },
-]
+const API_BASE_URL = import.meta.env.VITE_API_URL
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL
+const getLogoUrl = (path?: string | null) => {
+  const fallback =
+    "https://img.daisyui.com/images/profile/demo/yellingcat@192.webp"
 
-  const getLogoUrl = (path?: string | null) => {
-    const fallback =
-      "https://img.daisyui.com/images/profile/demo/yellingcat@192.webp"
+  if (!path) return fallback
+  if (/^https?:\/\//i.test(path)) return path
 
-    if (!path) return fallback
-    // si ya viene como URL absoluta
-    if (/^https?:\/\//i.test(path)) return path
-
-    // 👈 tu backend sirve estáticos en /archivos
-    return `${API_BASE_URL}/archivos/${path}`
-  }
+  return `${API_BASE_URL}/archivos/${path}`
+}
 
 const ComercioPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+
 
   const comercioId = Number(id)
 
@@ -96,6 +62,15 @@ const ComercioPage: React.FC = () => {
     }
   }, [comercioId, setActiveComercio])
 
+  // 🚨 VALIDACIÓN RÁPIDA DEL ID
+  if (!id || Number.isNaN(comercioId)) {
+    return (
+      <div className="p-4 text-center text-red-500">
+        ID de comercio inválido. Intenta volver al listado de comercios.
+      </div>
+    )
+  }
+
   // Categorías + info del comercio
   const {
     data: categoriasProductos,
@@ -116,9 +91,10 @@ const ComercioPage: React.FC = () => {
   })
 
   const comercio = categoriasProductos?.comercio
-  const categorias = categoriasProductos?.categorias || []
+  const categorias = Array.isArray(categoriasProductos?.categorias)
+    ? categoriasProductos!.categorias
+    : []
 
-  // 👇 según backend:
   // 0 = productos, 1 = imágenes, 2 = ambos
   const estadoServicio = comercio?.estado_servicio
 
@@ -126,20 +102,18 @@ const ComercioPage: React.FC = () => {
     estadoServicio === 0 || estadoServicio === 2 || estadoServicio === undefined
   const showGaleria = estadoServicio === 1 || estadoServicio === 2
 
-  // 🔁 este useEffect debe llamarse SIEMPRE, no después de returns condicionales
+  // Ajustar modo de vista según estado del servicio
   useEffect(() => {
     if (!comercio) return
 
     if (estadoServicio === 1) {
-      // Solo galería
       setViewMode("galeria")
     } else {
-      // 0 (productos), 2 (ambos) o undefined
       setViewMode("productos")
     }
   }, [comercio, estadoServicio])
 
-  // 👇 Traer imágenes para la galería (antes del comentario de hooks)
+  // Traer imágenes para la galería
   const {
     data: imagenesData,
     isLoading: loadingImagenes,
@@ -188,7 +162,7 @@ const ComercioPage: React.FC = () => {
               <span>Facebook</span>
             </a>
 
-            {/* Instagram (abre la app / web con la URL) */}
+            {/* Instagram */}
             <a
               href={`https://www.instagram.com/?url=${encodedUrl}`}
               target="_blank"
@@ -213,29 +187,35 @@ const ComercioPage: React.FC = () => {
     })
   }
 
-  // 🚨 A PARTIR DE AQUÍ, NINGÚN HOOK NUEVO
-  if (!id || Number.isNaN(comercioId)) {
-    return <div className="p-4 text-center text-red-500">ID de comercio inválido</div>
-  }
-
-  if (loadingCategorias)
-    return <div className="p-4 text-center">Cargando categorías...</div>
-  if (errorCategorias)
+  // ESTADOS GENERALES DE CATEGORÍAS (HOOK BASE)
+  if (loadingCategorias) {
     return (
-      <div className="p-4 text-center text-red-500">
-        Error al cargar categorías
+      <div className="p-4 text-center text-slate-600">
+        Cargando información del comercio...
       </div>
     )
+  }
 
-  // Adaptamos los productos
-  const productos: ProductoAdaptado[] = (productosData?.items || []).map((p) => ({
-    id: String(p.id),
-    nombre: p.nombre,
-    descripcion: p.descripcion,
-    precio: p.precio,
-    imagen:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqIvY_EddgWVLKNZD3S-xTjijRkfogKFxFkA&s",
-  }))
+  if (errorCategorias) {
+    return (
+      <div className="p-4 text-center text-red-500">
+        Ocurrió un error al cargar la información del comercio. <br />
+        Intenta recargar la página más tarde.
+      </div>
+    )
+  }
+
+  // Adaptamos los productos de forma segura
+  const productos: ProductoAdaptado[] = Array.isArray(productosData?.items)
+    ? productosData!.items.map((p) => ({
+        id: String(p.id),
+        nombre: p.nombre,
+        descripcion: p.descripcion,
+        precio: p.precio,
+        imagen:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqIvY_EddgWVLKNZD3S-xTjijRkfogKFxFkA&s",
+      }))
+    : []
 
   const handleAddToCart = (productId: string) => {
     const product = productos.find((p) => p.id === productId)
@@ -256,6 +236,8 @@ const ComercioPage: React.FC = () => {
       nombre: img.mensaje || `Imagen ${img.id}`,
       imagen: img.url,
     })) ?? []
+
+  const noTieneServicio = !showProductos && !showGaleria
 
   return (
     <div className="mb-32">
@@ -307,7 +289,7 @@ const ComercioPage: React.FC = () => {
               </h1>
 
               <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-xl">
-                {comercio?.descripcion || "Descripción del comercio"}
+                {comercio?.descripcion || "Descripción no disponible por el momento."}
               </p>
 
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs sm:text-[13px] text-slate-600">
@@ -338,6 +320,12 @@ const ComercioPage: React.FC = () => {
                     Productos y galería
                   </span>
                 )}
+                {noTieneServicio && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-yellow-50 border border-yellow-100 px-3 py-1 text-yellow-700">
+                    <Info className="w-3 h-3" />
+                    Servicio no disponible temporalmente
+                  </span>
+                )}
               </div>
             </div>
 
@@ -346,8 +334,7 @@ const ComercioPage: React.FC = () => {
                 <div className="rounded-2xl bg-white/80 border border-orange-100 shadow-lg p-2">
                   <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden bg-slate-100 flex items-center justify-center">
                     <img
-                src={getLogoUrl((comercio as any)?.logo_url)}
-
+                      src={getLogoUrl((comercio as any)?.logo_url)}
                       alt={comercio?.nombre_comercial || "Logo del comercio"}
                       className="w-full h-full object-cover"
                     />
@@ -368,8 +355,15 @@ const ComercioPage: React.FC = () => {
 
       {/* CONTENIDO */}
       <div className="container mx-auto px-4 py-6">
+        {/* Si no tiene servicio configurado */}
+        {noTieneServicio && (
+          <div className="mt-6 text-center text-slate-500">
+            Este comercio aún no tiene productos ni galería configurados.
+          </div>
+        )}
+
         {/* SWITCH PRODUCTOS / GALERÍA (solo cuando estado_servicio = 2) */}
-        {estadoServicio === 2 && (
+        {estadoServicio === 2 && !noTieneServicio && (
           <div className="flex justify-center mb-6">
             <div className="inline-flex rounded-full bg-white/80 shadow-md border border-gray-200 p-1">
               <button
@@ -400,20 +394,37 @@ const ComercioPage: React.FC = () => {
         )}
 
         {/* Vista PRODUCTOS */}
-        {showProductos && viewMode === "productos" && (
+        {showProductos && !noTieneServicio && viewMode === "productos" && (
           <>
-            <CategoriaProductos
-              categorias={categorias}
-              categoriaActiva={categoriaActiva}
-              onChange={(catId) => setCategoriaActiva(catId)}
-            />
-
-            {loadingProductos && <div className="mt-4">Cargando productos...</div>}
-            {errorProductos && (
-              <div className="mt-4 text-red-500">Error al cargar productos</div>
+            {categorias.length > 0 ? (
+              <CategoriaProductos
+                categorias={categorias}
+                categoriaActiva={categoriaActiva}
+                onChange={(catId) => setCategoriaActiva(catId)}
+              />
+            ) : (
+              <div className="mt-4 text-sm text-slate-500">
+                Este comercio aún no tiene categorías configuradas.
+              </div>
             )}
 
-            {!loadingProductos && !errorProductos && (
+            {loadingProductos && (
+              <div className="mt-4 text-slate-600">Cargando productos...</div>
+            )}
+
+            {errorProductos && (
+              <div className="mt-4 text-red-500">
+                Error al cargar productos. Intenta nuevamente más tarde.
+              </div>
+            )}
+
+            {!loadingProductos && !errorProductos && productos.length === 0 && (
+              <div className="mt-6 text-center text-slate-500">
+                No se encontraron productos para esta categoría o búsqueda.
+              </div>
+            )}
+
+            {!loadingProductos && !errorProductos && productos.length > 0 && (
               <div className="mt-4">
                 <ProductosGrid
                   productos={productos}
@@ -427,23 +438,33 @@ const ComercioPage: React.FC = () => {
         )}
 
         {/* Vista GALERÍA */}
-        {showGaleria && viewMode === "galeria" && (
+        {showGaleria && !noTieneServicio && viewMode === "galeria" && (
           <>
             {loadingImagenes && (
-              <div className="mt-4">Cargando galería de imágenes...</div>
-            )}
-            {errorImagenes && (
-              <div className="mt-4 text-red-500">
-                Error al cargar la galería de imágenes
+              <div className="mt-4 text-slate-600">
+                Cargando galería de imágenes...
               </div>
             )}
-            {!loadingImagenes && !errorImagenes && (
-              <GaleriaImagenes
-                productos={
-                  productosGaleria.length > 0 ? productosGaleria : productosImg
-                }
-              />
+
+            {errorImagenes && (
+              <div className="mt-4 text-red-500">
+                Error al cargar la galería de imágenes. Intenta nuevamente más tarde.
+              </div>
             )}
+
+            {!loadingImagenes &&
+              !errorImagenes &&
+              productosGaleria.length === 0 && (
+                <div className="mt-6 text-center text-slate-500">
+                  Este comercio aún no tiene imágenes en la galería.
+                </div>
+              )}
+
+            {!loadingImagenes &&
+              !errorImagenes &&
+              productosGaleria.length > 0 && (
+                <GaleriaImagenes productos={productosGaleria} />
+              )}
           </>
         )}
 
