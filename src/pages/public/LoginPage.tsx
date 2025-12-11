@@ -1,5 +1,5 @@
 import React from "react";
-import { Bike, Mail, Lock, Eye, EyeOff, ShieldCheck, Loader2 } from "lucide-react";
+import { Bike, Mail, Lock, Eye, EyeOff, ShieldCheck, Loader2, ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import type { SubmitHandler, FieldError } from "react-hook-form";
 import { useLogin } from "../../services/useAuth";
@@ -81,6 +81,15 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen overflow-hidden w-full bg-gradient-to-r from-[#FF6600] via-[#FF7A26] to-[#FF9A57] text-white">
+
+      <button
+        type="button"
+        onClick={() => navigate("/")}
+        className="absolute left-4 top-4 z-20 inline-flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-[#333333] shadow-lg hover:bg-white"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Volver al inicio
+      </button>
       {/* Orbes */}
       <div className="pointer-events-none absolute inset-0 z-0 select-none overflow-hidden">
         <div className="absolute -left-24 top-10 h-56 w-56 rounded-full bg-white/10" />
@@ -212,7 +221,7 @@ const LoginPage: React.FC = () => {
 
                 <div className="divider text-[#999999]">o</div>
 
-                <div className="flex flex-col gap-3">
+                <div className=" flex-col gap-3 hidden">
                   <button
                     type="button"
                     onClick={handleGoogleLogin}
@@ -235,7 +244,7 @@ const LoginPage: React.FC = () => {
               </form>
             </div>
 
-            <div className="rounded-b-3xl bg-[#F2F2F2] p-4 text-center text-sm text-[#333333]">
+            <div className="rounded-b-3xl bg-[#F2F2F2] p-4 hidden text-center text-sm text-[#333333]">
               ¿No tienes cuenta?{" "}
               <a href="#" className="link link-hover text-[#FF6600]">
                 Regístrate

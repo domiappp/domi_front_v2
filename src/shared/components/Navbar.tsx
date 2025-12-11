@@ -50,6 +50,14 @@ const Navbar: React.FC = () => {
       ? "/dashboard"
       : "/productos";
 
+  const WHATSAPP_NUMBER = "573142423130"; // 57 (código de país) + 3142423130
+  const WHATSAPP_MESSAGE = "Hola, quiero más información";
+
+  const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    WHATSAPP_MESSAGE
+  )}`;
+
+
   return (
     <header
       className="sticky top-0 z-50 w-full border-b shadow-xl backdrop-blur-xl"
@@ -89,7 +97,6 @@ const Navbar: React.FC = () => {
         {/* Centro (desktop) */}
         <div className="hidden md:flex items-center gap-8">
           <NavLink url="/">Inicio</NavLink>
-          <NavLink url="/contacto">Contacto</NavLink>
 
           <span
             className="hidden lg:inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs sm:text-sm shadow-md border"
@@ -109,19 +116,24 @@ const Navbar: React.FC = () => {
         {/* Derecha */}
         <div className="flex items-center gap-3">
           {/* Botón de pedidos (desktop) */}
-          <button
-            type="button"
+          {/* Botón de pedidos (desktop) */}
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="hidden md:inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs sm:text-sm font-semibold shadow-lg transition hover:bg-white/20 hover:scale-[1.02]"
             style={{
               backgroundColor: "rgba(255,255,255,0.25)",
               color: "#FFFFFF",
             }}
           >
-            <ShoppingCart size={16} />
-            <span>Mis pedidos</span>
-          </button>
+            <span>Quieres ser Aliado?</span>
+          </a>
 
           {/* Cuenta */}
+
+                 {user && (
+                  
           <details className="group relative">
             <summary
               className="flex cursor-pointer list-none items-center gap-2 rounded-full border px-1.5 pr-3 text-xs sm:text-sm transition hover:bg-white/10"
@@ -149,45 +161,36 @@ const Navbar: React.FC = () => {
               style={{ borderColor: "#E5E7EB", color: "#111827" }}
             >
               {/* 👇 NUEVO: Ir al panel solo si hay usuario */}
-              {user && (
-                <li>
-                  <Link
-                    to={panelUrl}
-                    className="block rounded-lg px-3 py-2 hover:bg-slate-50 font-semibold text-slate-800"
-                    onClick={close}
-                  >
-                    Ir al panel
-                  </Link>
-                </li>
-              )}
+       
+                <>
+                  <li>
+                    <Link
+                      to={panelUrl}
+                      className="block rounded-lg px-3 py-2 hover:bg-slate-50 font-semibold text-slate-800"
+                      onClick={close}
+                    >
+                      Ir al panel
+                    </Link>
+                  </li>
 
-              <li>
-                <a className="block rounded-lg px-3 py-2 hover:bg-slate-50">Perfil</a>
-              </li>
-              <li>
-                <a className="block rounded-lg px-3 py-2 hover:bg-slate-50">
-                  Configuración
-                </a>
-              </li>
-              <li>
-                <a className="block rounded-lg px-3 py-2 hover:bg-slate-50">
-                  Pedidos
-                </a>
-              </li>
-              <li
-                className="mt-1 border-t"
-                style={{ borderColor: "#E5E7EB" }}
-              />
-              <li>
-                <a
-                  className="block rounded-lg px-3 py-2 font-semibold"
-                  style={{ color: "#EF4444" }}
-                >
-                  Cerrar sesión
-                </a>
-              </li>
+
+                  <li
+                    className="mt-1 border-t"
+                    style={{ borderColor: "#E5E7EB" }}
+                  />
+                  <li>
+                    <a
+                      className="block rounded-lg px-3 py-2 font-semibold"
+                      style={{ color: "#EF4444" }}
+                    >
+                      Cerrar sesión
+                    </a>
+                  </li>
+                </>
+          
             </motion.ul>
           </details>
+              )}
 
           {/* Menú móvil */}
           <button
@@ -234,18 +237,14 @@ const Navbar: React.FC = () => {
           <div className="grid gap-1.5">
             <a
               onClick={close}
-              href="#categorias"
-              className="rounded-lg px-3 py-2 text-sm font-medium hover:bg-white/10 text-white"
-            >
-              Categorías
-            </a>
-            <a
-              onClick={close}
-              href="#contacto"
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="rounded-lg px-3 py-2 text-sm font-medium hover:bg-white/10 text-white"
             >
               ¿Quieres ser aliado?
             </a>
+
           </div>
         </div>
       </motion.div>

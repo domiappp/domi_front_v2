@@ -79,14 +79,14 @@ export const MENU_ESTATICO: MenuItem[] = [
   },
 
 
-  {
-    nombre: "Horarios",
-    ruta: "/horarios",
-    icono: "Clock",
-    orden: 99,
-    requireModule: "horarios",
-    requireRole: "comercio", // ejemplo de restricción por rol
-  },
+  // {
+  //   nombre: "Horarios",
+  //   ruta: "/horarios",
+  //   icono: "Clock",
+  //   orden: 99,
+  //   requireModule: "horarios",
+  //   requireRole: "comercio", // ejemplo de restricción por rol
+  // },
 
    {
     nombre: "Servicios",

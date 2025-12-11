@@ -180,36 +180,10 @@ const ComerciosPorServicioGrid: React.FC = () => {
   if (uiView === "form") {
     return (
       <section className="w-full h-auto flex items-center justify-center bg-gradient-to-b from-white via-orange-50/60 to-slate-50/80">
-        <div className="mx-auto w-full max-w-6xl px-3 sm:px-4 xl:py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center justify-center">
-            <div className="hidden xl:flex justify-center items-center order-1 md:order-1">
-              <img
-                src="/moto.png"
-                alt="Entrega en moto"
-                className="w-full max-w-md h-auto object-contain drop-shadow-2xl"
-              />
-            </div>
-
-            <div className="flex justify-center items-center order-2 md:order-2">
-              <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-orange-100/80">
-                <div className="border-b border-orange-50 px-4 pt-4 pb-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--brand-orange,#FF6B00)]">
-                    Servicio personalizado
-                  </p>
-                  <h2 className="mt-1 text-base font-semibold text-slate-900">
-                    Cuéntanos qué necesitas
-                  </h2>
-                </div>
-                <div className="px-4 pb-4 pt-3 xl:p-6">
-                  {formType === "pedido" && <FormCompras />}
-                  {formType === "recogida" && <FormRecogida />}
-                  {formType === "pago" && <FormPagos />}
-                  {formType === "envio" && <FormEnvios />}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {formType === "pedido" && <FormCompras />}
+        {formType === "recogida" && <FormRecogida />}
+        {formType === "pago" && <FormPagos />}
+        {formType === "envio" && <FormEnvios />}
       </section>
     );
   }

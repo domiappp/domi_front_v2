@@ -208,13 +208,13 @@ const ComercioPage: React.FC = () => {
   // Adaptamos los productos de forma segura
   const productos: ProductoAdaptado[] = Array.isArray(productosData?.items)
     ? productosData!.items.map((p) => ({
-        id: String(p.id),
-        nombre: p.nombre,
-        descripcion: p.descripcion,
-        precio: p.precio,
-        imagen:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqIvY_EddgWVLKNZD3S-xTjijRkfogKFxFkA&s",
-      }))
+      id: String(p.id),
+      nombre: p.nombre,
+      descripcion: p.descripcion,
+      precio: p.precio,
+      imagen:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqIvY_EddgWVLKNZD3S-xTjijRkfogKFxFkA&s",
+    }))
     : []
 
   const handleAddToCart = (productId: string) => {
@@ -369,11 +369,10 @@ const ComercioPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setViewMode("productos")}
-                className={`px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base rounded-full transition-all ${
-                  viewMode === "productos"
+                className={`px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base rounded-full transition-all ${viewMode === "productos"
                     ? "bg-[#E76B51] text-white shadow"
                     : "text-gray-600 hover:bg-gray-100"
-                }`}
+                  }`}
               >
                 Productos
               </button>
@@ -381,11 +380,10 @@ const ComercioPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setViewMode("galeria")}
-                className={`px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base rounded-full transition-all ${
-                  viewMode === "galeria"
+                className={`px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base rounded-full transition-all ${viewMode === "galeria"
                     ? "bg-[#E76B51] text-white shadow"
                     : "text-gray-600 hover:bg-gray-100"
-                }`}
+                  }`}
               >
                 Galería
               </button>
@@ -463,7 +461,10 @@ const ComercioPage: React.FC = () => {
             {!loadingImagenes &&
               !errorImagenes &&
               productosGaleria.length > 0 && (
-                <GaleriaImagenes productos={productosGaleria} />
+                <GaleriaImagenes
+                  productos={productosGaleria}
+                  whatsappNumber={comercio?.telefono}  // 👈 ajusta el campo según tu API
+                />
               )}
           </>
         )}
